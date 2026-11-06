@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Чек-листы проектов</title>
+<link rel="stylesheet" href="sprint3/site.css">
+<style>.proj{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.proj button.on{border-color:var(--ac);box-shadow:inset 0 -3px 0 var(--ac)}
+.pass{display:grid;grid-template-columns:140px 1fr;gap:6px 14px}.pass b{color:var(--mut);font-weight:600}
+.prog{height:10px;background:var(--bd);border-radius:6px;overflow:hidden}.prog i{display:block;height:100%;width:0;background:var(--ac);transition:width .2s}
+.it{display:flex;gap:10px;padding:5px 0;align-items:flex-start;border-bottom:1px solid var(--bd)}.it:last-child{border:0}
+.it input{margin-top:5px;width:18px;height:18px;accent-color:var(--ac);flex:none}.it.done .t{color:var(--mut);text-decoration:line-through}
+.st{font-size:.78rem;padding:1px 8px;border-radius:999px;white-space:nowrap}ul.l{margin:4px 0 0;padding-left:18px}
+.Closed{background:#2f9e7a33}.Reopened{background:#d6454533}
+</style></head>
+<body><main>
+<h1>✅ Чек-листы проектов</h1>
+<p class="sub">У каждого проекта свой чек-лист: суть спринта, объект тестирования, направленность, область проверки и сами проверки с результатами.</p>
+<div id="nav" class="row"></div>
+<div class="proj" id="proj"></div>
+<div id="view"></div>
+</main>
+<script src="sprint3/site.js"></script>
+<script>
+$('#nav').innerHTML=[['index.html','Чек-лист тестировщика'],['sprint3/index.html','Спринт 3: каршеринг'],['metro/index.html','Итоговый: Яндекс Метро']].map(([h,t])=>`<a href="${h}">${t}</a>`).join('');
+const KEY='qa-projects-checklist-v1';let S=JSON.parse(localStorage.getItem(KEY)||'{}'),P=[],cur=null,flt='';
+const IC={Passed:'✅',Closed:'✅',Failed:'❌',Reopened:'🔁',Blocked:'⛔',Skipped:'⏭','':'—'};
+const li=a=>`<ul class="l">${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+function view(){const p=P.find(x=>x.id==cur);document.querySelectorAll('#proj button').forEach(b=>b.classList.toggle('on',b.dataset.p==cur));
+const done=k=>S[p.id+'|'+k];const all=p.sections.flatMap(s=>s.items);const d=all.filter(i=>done(i.id+'|'+i.section)).length;
+const tot=Object.entries(p.total).map(([k,v])=>`<span class="st ${k}">${IC[k]} ${k}: ${v}</span>`).join(' ');
+let h=`<div class="card"><h2 style="margin:0 0 4px">${esc(p.sprint)} · ${esc(p.title)}</h2><p class="mut" style="margin:0 0 10px">${esc(p.essence)}</p>
+<div class="pass"><b>Объект</b><span>${esc(p.object)}</span><b>Направленность</b><span>${p.focus.map(esc).join(' · ')}</span><b>Окружение</b><span>${esc(p.environment)}</span><b>Проверялось</b>${li(p.scope)}<b>Не проверялось</b>${li(p.out_of_scope)}<b>Результаты</b><span>${tot}</span></div></div>
+<div class="card"><div class="prog"><i style="width:${all.length?100*d/all.length:0}%"></i></div>
+<div class="row"><small>Отмечено: ${d} из ${all.length}</small><span style="flex:1"></span>
+<select id="flt"><option value="">Все статусы</option>${Object.keys(p.total).map(k=>`<option ${flt==k?'selected':''}>${k}</option>`).join('')}</select>
+<button id="cp" class="p">Скопировать как Markdown</button><button id="rs">Сбросить</button></div></div>`;
+p.sections.forEach(s=>{const its=s.items.filter(i=>!flt||i.status==flt);if(!its.length)return;
+h+=`<div class="card"><details ${p.sections.length<4||flt?'open':''}><summary>${esc(s.title)} <small>(${its.length})</small></summary>`+its.map(i=>{const k=i.id+'|'+i.section;return `<label class="it ${done(k)?'done':''}"><input type="checkbox" data-k="${esc(k)}" ${done(k)?'checked':''}><span class="t"><b>${esc(i.id)}</b> ${esc(i.text)}${i.note?`<br><small>${esc(i.note)}</small>`:''}${i.bugs.length?`<br><small>Баги: ${i.bugs.join(', ')}</small>`:''}</span><span class="st ${i.status}">${IC[i.status]} ${i.status||'—'}</span></label>`}).join('')+`</details></div>`});
+$('#view').innerHTML=h;
+$('#view').onchange=e=>{if(e.target.dataset.k){S[p.id+'|'+e.target.dataset.k]=e.target.checked;localStorage.setItem(KEY,JSON.stringify(S));view()}else if(e.target.id=='flt'){flt=e.target.value;view()}};
+$('#rs').onclick=()=>{Object.keys(S).filter(k=>k.startsWith(p.id+'|')).forEach(k=>delete S[k]);localStorage.setItem(KEY,JSON.stringify(S));view()};
+$('#cp').onclick=()=>{const md=`# ${p.title}\n\n**Объект:** ${p.object}\n**Направленность:** ${p.focus.join(', ')}\n\n`+p.sections.map(s=>`### ${s.title}\n`+s.items.map(i=>`- [${done(i.id+'|'+i.section)?'x':' '}] ${i.id} ${i.text}${i.status?` (${i.status})`:''}`).join('\n')).join('\n\n');navigator.clipboard.writeText(md);$('#cp').textContent='Скопировано ✓'}}
+load('checklists.json').then(d=>{P=d;$('#proj').innerHTML=P.map(p=>`<button data-p="${p.id}">${esc(p.sprint)}</button>`).join('');
+document.querySelectorAll('#proj button').forEach(b=>b.onclick=()=>{cur=b.dataset.p;flt='';history.replaceState(null,'','?p='+cur);view()});
+cur=new URLSearchParams(location.search).get('p');if(!P.find(x=>x.id==cur))cur=P[0].id;view()});
+</script></body></html>

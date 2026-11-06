@@ -17,4 +17,6 @@ for pattern, site, project in TARGETS:
     for sub in ("screenshots", "media"):
         for f in (bugs / sub).glob("*"):
             shutil.copy(f, site / "media" / f.name)
+(ROOT / "docs" / "data").mkdir(parents=True, exist_ok=True)
+shutil.copy(ROOT / "data" / "checklists.json", ROOT / "docs" / "data" / "checklists.json")
 print("sync ok")
