@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Интерактивный чек-лист тестировщика</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#6b7280;--ac:#2f9e7a;--bd:#e3e6ea}
+@media(prefers-color-scheme:dark){:root{--bg:#14171c;--card:#1c2027;--tx:#e8eaee;--mut:#98a0ad;--bd:#2d333d}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;margin:0 0 4px}p.sub{color:var(--mut);margin:0 0 20px}
+.bar{position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2}
+.prog{height:10px;background:var(--bd);border-radius:6px;overflow:hidden}.prog i{display:block;height:100%;width:0;background:var(--ac);transition:width .2s}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+button{font:inherit;padding:7px 14px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac)}button:hover{filter:brightness(.95)}
+.tabs button.on{border-color:var(--ac);box-shadow:inset 0 -3px 0 var(--ac)}
+section{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:6px 18px 12px;margin:14px 0}
+h2{font-size:1.05rem;margin:14px 0 6px}
+label{display:flex;gap:10px;padding:6px 0;cursor:pointer;align-items:flex-start}
+input[type=checkbox]{margin-top:5px;width:18px;height:18px;accent-color:var(--ac);flex:none}
+label.done span{color:var(--mut);text-decoration:line-through}
+small{color:var(--mut)}code{background:var(--bd);padding:1px 6px;border-radius:4px}
+.hide{display:none}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ac);color:#fff;padding:8px 16px;border-radius:8px;opacity:0;transition:.2s}.toast.on{opacity:1}
+.o{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}.o div{border:1px solid var(--bd);border-radius:10px;padding:10px}.o b{color:var(--ac);font-size:1.2rem}
+</style>
+</head>
+<body>
+<main>
+<h1>🧪 Чек-лист тестировщика</h1>
+<p class="sub">Интерактивный чек-лист на примере «Яндекс Маршрутов». Прогресс сохраняется в вашем браузере.</p>
+<div class="bar">
+  <div class="prog"><i id="pb"></i></div>
+  <div class="row tabs">
+    <button class="on" data-t="list">Чек-лист</button>
+    <button data-t="oracle">Оракул FEW HICCUPS</button>
+    <button data-t="sev">Серьёзность бага</button>
+    <span style="flex:1"></span><small id="cnt"></small>
+    <button id="copy" class="p">Скопировать как Markdown</button>
+    <button id="reset">Сбросить</button>
+  </div>
+</div>
+
+<div id="list"></div>
+
+<div id="oracle" class="hide"><section>
+<h2>Как понять, что поведение — баг?</h2>
+<p><small>Оракул — источник ожидаемого результата. Мнемоника FEW HICCUPS:</small></p>
+<div class="o">
+<div><b>F</b> Familiarity<br><small>Знакомо ли поведение по другим продуктам?</small></div>
+<div><b>E</b> Explainability<br><small>Можно ли объяснить, почему так работает?</small></div>
+<div><b>W</b> World<br><small>Соответствует ли реальному миру (время 00–23, 00–59)?</small></div>
+<div><b>H</b> History<br><small>Как вёл себя продукт раньше?</small></div>
+<div><b>I</b> Image<br><small>Соответствует ли имиджу продукта?</small></div>
+<div><b>C</b> Claims<br><small>Что заявлено в требованиях?</small></div>
+<div><b>C</b> Comparable products<br><small>Как у конкурентов?</small></div>
+<div><b>U</b> User's desires<br><small>Чего ждёт пользователь?</small></div>
+<div><b>P</b> Product / Purpose<br><small>Согласуется ли с остальным продуктом и его целью?</small></div>
+<div><b>S</b> Statutes<br><small>Стандарты, законы, нормы.</small></div>
+</div>
+<p><small>Пример: поле «Часы» принимает «24» — нарушает <b>W</b> (в сутках нет 24-го часа) и <b>C</b> (требования допускают 0–23).</small></p>
+</section></div>
+
+<div id="sev" class="hide"><section>
+<h2>Определите серьёзность и приоритет</h2>
+<label><input type="radio" name="s" value="0"><span>Продукт совсем не выполняет задачу (нельзя построить маршрут)</span></label>
+<label><input type="radio" name="s" value="1"><span>Важная функция работает неверно, но пользоваться можно (неверный расчёт цены)</span></label>
+<label><input type="radio" name="s" value="2"><span>Функция работает не так, как задумано, но результат корректен (нет автоподстановки «0»)</span></label>
+<label><input type="radio" name="s" value="3"><span>Неудобство или косметика (текст ошибки не по требованиям)</span></label>
+<p id="sevout"><small>Выберите вариант выше.</small></p>
+</section></div>
+<div class="toast" id="toast">Скопировано</div>
+</main>
+<script>
+const DATA=[
+["1. Подготовка",[
+"Требования прочитаны и понятны — известно, что именно тестируем",
+"Уточнены ресурсы: где взять сборку и кто автор требований",
+"Известен срок и куда выносить баг-репорты и тест-кейсы",
+"Составлены классы эквивалентности и граничные значения"]],
+["2. Поле «Часы»",[
+"Значение 15 принимается: рамка не красная, ошибки нет",
+"Однозначное число (1…9) дополняется нулём: 1 → 01",
+"Границы: 0 и 23 принимаются, −1 и 24 — ошибка",
+"Дробные числа, буквы, пробел и спецсимволы — ошибка",
+"Пустое поле — ошибка «Вы ввели некорректное время»"]],
+["3. Поле «Минуты»",[
+"Значение 35 принимается",
+"Однозначное число дополняется нулём",
+"Границы: 0 и 59 принимаются, −1 и 60 — ошибка",
+"Дробные, буквы, спецсимволы, пробел — ошибка",
+"Пустое поле — ошибка"]],
+["4. Поля «Откуда» / «Куда»",[
+"Адрес из списка принимается",
+"Адрес не из списка — ошибка с текстом из требований",
+"Пробелы до и после значения удаляются автоматически",
+"Пустое поле — ошибка, красная рамка"]],
+["5. Расчёт маршрута (свой автомобиль)",[
+"Время t = S / V посчитано верно для каждого интервала суток",
+"Границы интервалов: 00:01, 08:00, 08:01, 12:00, 12:01, 18:00, 18:01, 22:00, 22:01, 00:00",
+"Стоимость = расстояние × цена за км",
+"Маршрут туда и обратно считается корректно",
+"Одинаковые адреса: расстояние 0, время и цена 0"]],
+["6. Оформление результата",[
+"Заголовок бага описывает суть одной фразой",
+"Есть шаги, ожидаемый и фактический результат",
+"Указаны окружение, серьёзность и приоритет",
+"Приложен скриншот без личных данных"]]];
+const KEY="qa-checklist-v1";let st=JSON.parse(localStorage.getItem(KEY)||"{}");
+const $=s=>document.querySelector(s);let n=0;
+$("#list").innerHTML=DATA.map(([h,items])=>`<section><h2>${h}</h2>`+items.map(t=>{const id="c"+(n++);return `<label data-id="${id}"><input type="checkbox" id="${id}"><span>${t}</span></label>`}).join("")+"</section>").join("");
+function paint(){const boxes=[...document.querySelectorAll("#list input")];let d=0;boxes.forEach(b=>{b.checked=!!st[b.id];b.parentElement.classList.toggle("done",b.checked);d+=b.checked});
+$("#pb").style.width=100*d/boxes.length+"%";$("#cnt").textContent=d+" / "+boxes.length}
+$("#list").addEventListener("change",e=>{st[e.target.id]=e.target.checked;localStorage.setItem(KEY,JSON.stringify(st));paint()});
+$("#reset").onclick=()=>{st={};localStorage.removeItem(KEY);paint()};
+$("#copy").onclick=()=>{const md=[...document.querySelectorAll("#list section")].map(s=>"### "+s.querySelector("h2").textContent+"\n"+[...s.querySelectorAll("label")].map(l=>`- [${l.querySelector("input").checked?"x":" "}] ${l.textContent.trim()}`).join("\n")).join("\n\n");
+navigator.clipboard.writeText(md).then(()=>{const t=$("#toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1500)})};
+document.querySelectorAll(".tabs [data-t]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs [data-t]").forEach(x=>x.classList.toggle("on",x===b));["list","oracle","sev"].forEach(id=>$("#"+id).classList.toggle("hide",id!==b.dataset.t))});
+const SEV=[["Blocker","High"],["Critical","High"],["Major","Medium"],["Minor / Trivial","Low"]];
+document.querySelectorAll("[name=s]").forEach(r=>r.onchange=()=>{const[a,b]=SEV[r.value];$("#sevout").innerHTML=`Серьёзность: <b>${a}</b> · Приоритет: <b>${b}</b>`});
+paint();
+</script>
+</body>
+</html>
