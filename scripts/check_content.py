@@ -14,7 +14,7 @@ import zipfile
 from config import ROOT
 
 RULES = [
-    ("бренд", re.compile(r"яндекс|yandex|mesto|\bYaM|ЯМ-", re.I)),
+    ("бренд", re.compile(r"яндекс|yandex|mesto|\bYaM\b|YaMetro|ЯМ-", re.I)),
     ("учебная платформа", re.compile(r"учебн|практикум|praktikum|prakticum|воркшоп", re.I)),
     ("фирменные названия", re.compile(r"kittygram|foodgram|продуктовый помощник|stellar burgers", re.I)),
     ("внутренние адреса", re.compile(r"figma\.com|qa-faculty|qa-mesto|\.praktikum|\.prakticum", re.I)),
