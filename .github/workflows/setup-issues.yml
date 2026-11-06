@@ -9,7 +9,7 @@ on:
         description: "Для какого спринта создать Issues"
         type: choice
         default: all
-        options: [all, "2", "3"]
+        options: [all, "2", "3", "4"]
 
 permissions:
   issues: write

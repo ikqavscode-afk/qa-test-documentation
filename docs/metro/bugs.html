@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Реестр багов — Яндекс Метро</title><link rel="stylesheet" href="site.css"></head>
+<body><main><h1>Реестр багов</h1><p class="sub">Фильтруйте по серьёзности, области и тексту. Раскройте баг, чтобы увидеть шаги, результаты и вложения. Приложение «Яндекс Метро» для Android v3.6.</p>
+<div id="nav" class="row"></div>
+<div class="row"><input id="q" placeholder="Поиск по тексту…" style="flex:1;min-width:200px"><select id="sev"><option value="">Все серьёзности</option><option value="critical">Critical</option><option value="major">Major</option></select><select id="area"><option value="">Все области</option></select></div>
+<div id="count" class="mut"></div><div id="list"></div></main>
+<script src="site.js"></script><script>
+nav();let B=[];
+function draw(){const q=$('#q').value.toLowerCase(),s=$('#sev').value,a=$('#area').value;
+const r=B.filter(b=>(!s||b.severity==s)&&(!a||b.area==a)&&(!q||(b.id+b.title+b.actual+b.expected).toLowerCase().includes(q)));
+$('#count').textContent=`Показано ${r.length} из ${B.length}`;
+$('#list').innerHTML=r.map(b=>`<div class="card"><details><summary><span class="tag ${b.severity}">${b.severity}</span> <b>${b.id}</b> · ${esc(b.title)} <small>— ${esc(b.area_ru)}</small></summary>
+<p><b>Шаги:</b></p><ol style="margin:0;padding-left:20px">${b.steps.map(x=>`<li>${esc(x.replace(/^\d+\.\s*/,''))}</li>`).join('')}</ol>
+<p><b>Ожидаемый результат:</b> ${esc(b.expected)}</p><p><b>Фактический результат:</b> ${esc(b.actual)}</p><p class="mut">${esc(b.environment)}</p>${b.note?`<p><b>⚠️ ${esc(b.note)}</b></p>`:''}
+${b.screenshot?`<img loading="lazy" src="media/${b.screenshot}" alt="${b.id}">`:''}${b.video_gif?`<img loading="lazy" src="media/${b.video_gif}" alt="${b.id} GIF">`:''}</details></div>`).join('')}
+load('sprint4-bugs.json').then(d=>{B=d;const m={};d.forEach(b=>m[b.area]=b.area_ru);$('#area').innerHTML+=Object.entries(m).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');['q','sev','area'].forEach(i=>$('#'+i).addEventListener('input',draw));draw()});
+</script></body></html>

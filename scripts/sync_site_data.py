@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
-"""Копирует данные и медиа спринта 3 в docs/sprint3/, чтобы их раздавал GitHub Pages."""
+"""Копирует данные и медиа спринтов в docs/, чтобы их раздавал GitHub Pages."""
 import pathlib, shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SITE = ROOT / "docs" / "sprint3"
-(SITE / "data").mkdir(parents=True, exist_ok=True)
-(SITE / "media").mkdir(parents=True, exist_ok=True)
-for f in (ROOT / "data").glob("sprint3-*.json"):
-    shutil.copy(f, SITE / "data" / f.name)
-bugs = ROOT / "spritn-3-CarSh" / "bug-reports"
-for sub in ("screenshots", "media"):
-    for f in (bugs / sub).glob("*"):
-        shutil.copy(f, SITE / "media" / f.name)
+TARGETS = [
+    ("sprint3-*.json", "docs/sprint3", "spritn-3-CarSh"),
+    ("sprint4-*.json", "docs/metro", "spritn-4-YaMetro"),
+]
+for pattern, site, project in TARGETS:
+    site = ROOT / site
+    (site / "data").mkdir(parents=True, exist_ok=True)
+    (site / "media").mkdir(parents=True, exist_ok=True)
+    for f in (ROOT / "data").glob(pattern):
+        shutil.copy(f, site / "data" / f.name)
+    bugs = ROOT / project / "bug-reports"
+    for sub in ("screenshots", "media"):
+        for f in (bugs / sub).glob("*"):
+            shutil.copy(f, site / "media" / f.name)
 print("sync ok")

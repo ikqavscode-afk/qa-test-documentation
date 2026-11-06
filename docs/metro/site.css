@@ -1,0 +1,15 @@
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#6b7280;--ac:#2f9e7a;--bd:#e3e6ea;--red:#d64545;--org:#e08a1e;--yel:#c9a400;--grn:#2f9e7a}
+@media(prefers-color-scheme:dark){:root{--bg:#14171c;--card:#1c2027;--tx:#e8eaee;--mut:#98a0ad;--bd:#2d333d}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+main{max-width:980px;margin:0 auto;padding:22px 16px 60px}a{color:var(--ac)}
+h1{font-size:1.55rem;margin:0 0 4px}.sub{color:var(--mut);margin:0 0 16px}
+#nav a{padding:6px 12px;border:1px solid var(--bd);border-radius:8px;text-decoration:none;color:var(--tx);background:var(--card)}#nav a.on{border-color:var(--ac);box-shadow:inset 0 -3px 0 var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 18px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+input,select,button{font:inherit;padding:7px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}button{cursor:pointer}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.8rem;color:#fff}.critical{background:var(--red)}.major{background:var(--org)}.minor{background:var(--yel)}.high{background:var(--red)}.medium{background:var(--org)}.low{background:var(--grn)}
+small,.mut{color:var(--mut)}details summary{cursor:pointer;font-weight:600}details img{max-width:100%;border:1px solid var(--bd);border-radius:8px;margin-top:8px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{border:1px solid var(--bd);padding:5px 8px;text-align:left;vertical-align:top}
+.Passed{background:#2f9e7a33}.Failed{background:#d6454533}.Skipped{background:#98a0ad33}.Blocked{background:#e08a1e33}
+.chips span{display:inline-block;margin-right:12px}.num{font-size:1.5rem;font-weight:700}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}.opt.ok{border-color:var(--grn);background:#2f9e7a33}.opt.no{border-color:var(--red);background:#d6454533}

@@ -17,6 +17,7 @@
 |---|---|
 | [sprint-2-YaM](sprint-2-YaM/) | Спринт 2: «Яндекс Маршруты» — валидация полей и расчёт стоимости/времени поездки |
 | [spritn-3-CarSh](spritn-3-CarSh/) | Спринт 3: форма бронирования каршеринга — верстка и логика, 43 бага, серые зоны, отчёт о готовности |
+| [spritn-4-YaMetro](spritn-4-YaMetro/) | Итоговый проект (спринт 4): «Яндекс Метро» для Android — регрессия после рефакторинга и решение о релизе |
 
 ## Статистика (автообновляется)
 
@@ -61,12 +62,29 @@ pie showData title Спринт 3: дефекты по серьёзности
 
 🔗 [Реестр багов](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/bugs.html) · [Матрица браузеров](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/matrix.html) · [Серые зоны](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/gray-zones.html) · [Тренажёр «Найди баг»](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/trainer.html)
 
+### Яндекс Метро (Android) — итоговый проект
+
+<!-- STATS4:START (генерируется scripts/update_stats.py — не редактировать вручную) -->
+![checks](https://img.shields.io/badge/checks-57-blue) ![passed](https://img.shields.io/badge/passed-43-brightgreen) ![failed](https://img.shields.io/badge/failed-9-red) ![blocked](https://img.shields.io/badge/blocked-2-orange) ![skipped](https://img.shields.io/badge/skipped-3-lightgrey) ![bugs](https://img.shields.io/badge/bugs-13-orange) ![critical](https://img.shields.io/badge/critical-3-red) ![release](https://img.shields.io/badge/release-Conditional%20Go-yellow)
+
+```mermaid
+pie showData title Яндекс Метро: результаты проверок
+    "Passed" : 43
+    "Failed" : 9
+    "Blocked" : 2
+    "Skipped" : 3
+```
+<!-- STATS4:END -->
+
+🔗 [Реестр багов](https://ikqavscode-afk.github.io/qa-test-documentation/metro/bugs.html) · [Трассировка](https://ikqavscode-afk.github.io/qa-test-documentation/metro/matrix.html) · [Серые зоны](https://ikqavscode-afk.github.io/qa-test-documentation/metro/gray-zones.html) · [Симулятор решения о релизе](https://ikqavscode-afk.github.io/qa-test-documentation/metro/release.html)
+
 ## Что внутри
 
 | Папка | Назначение |
 |---|---|
 | [sprint-2-YaM](sprint-2-YaM/) | спринт 2: тест-дизайн, тест-кейсы, баг-репорты |
 | [spritn-3-CarSh](spritn-3-CarSh/) | спринт 3: тест-анализ, серые зоны, чек-листы, баги, отчёты, ретест |
+| [spritn-4-YaMetro](spritn-4-YaMetro/) | итоговый проект: мобильная регрессия, решение о релизе, трассировка |
 | [data](data/) | исходные данные (JSON): результаты тестов и баги — из них строится статистика и Issues |
 | [templates](templates/) | шаблоны тест-кейса, баг-репорта и чек-листа |
 | [docs](docs/) | методика (конспекты) и сайт GitHub Pages с интерактивным чек-листом |
@@ -75,7 +93,7 @@ pie showData title Спринт 3: дефекты по серьёзности
 
 ## Баги как Issues
 
-Дефекты (18 из спринта 2 и 43 из спринта 3) оформляются как GitHub Issues с метками `severity:`, `priority:`, `area:`.
+Дефекты (18 из спринта 2, 43 из спринта 3 и 13 из итогового проекта) оформляются как GitHub Issues с метками `severity:`, `priority:`, `area:`.
 Создаются одной кнопкой: **Actions → Setup issues → Run workflow** (можно выбрать спринт или оба). Повторный запуск дубликатов не создаёт.
 
 ## Дорожная карта
@@ -86,7 +104,8 @@ pie showData title Спринт 3: дефекты по серьёзности
 - [x] Шаблоны, Issues, автостатистика, интерактивный чек-лист
 - [x] Кроссбраузерная проверка верстки (Firefox и Яндекс Браузер, спринт 3)
 - [ ] Кроссбраузерная проверка остальных браузеров (Chrome, Safari, Edge)
-- [ ] Проверка на мобильных устройствах
+- [x] Мобильное тестирование: Android, ориентация, жесты, сеть (итоговый проект)
+- [ ] Проверка на реальных устройствах и iOS
 - [ ] Анализ запросов и логов в DevTools (вкладка Network, консоль)
 - [ ] API-тестирование в Postman
 - [ ] Автотесты валидации на Playwright + запуск в GitHub Actions

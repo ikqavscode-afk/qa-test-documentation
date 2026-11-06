@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Яндекс Метро (Android) — регрессия и решение о релизе</title><link rel="stylesheet" href="site.css"></head>
+<body><main><h1>📱 Яндекс Метро для Android — регрессия и решение о релизе</h1><p class="sub">Итоговый проект: функциональное и регрессионное тестирование мобильного приложения после рефакторинга и решение о публикации в Google Play.</p>
+<div id="nav" class="row"></div>
+<div class="card chips" id="stats">Загрузка…</div>
+<div class="card"><b>Что здесь есть</b><ul>
+<li><a href="bugs.html">Реестр багов</a> — 13 дефектов с фильтрами, скриншотами и GIF.</li>
+<li><a href="matrix.html">Трассировка</a> — проверки, баги и результаты в одной таблице.</li>
+<li><a href="gray-zones.html">Серые зоны</a> — вопросы к требованиям и допущения.</li>
+<li><a href="release.html">Симулятор решения о релизе</a> — выберите, какие баги исправить, и посмотрите, как меняется решение.</li>
+<li><a href="../index.html">Чек-лист тестировщика</a> — мобильный генератор проверок и ретест.</li></ul></div>
+</main><script src="site.js"></script><script>
+nav();Promise.all([load('sprint4-bugs.json'),load('sprint4-checks.json')]).then(([b,c])=>{
+const n=s=>c.filter(x=>x.status==s).length;
+$('#stats').innerHTML=`<span><span class="num">${c.length}</span><br>проверок</span><span><span class="num">${n('Passed')}</span><br>пройдено</span><span><span class="num">${n('Failed')}</span><br>провалено</span><span><span class="num">${b.length}</span><br>багов</span><span><span class="num">${b.filter(x=>x.severity=='critical').length}</span><br>критических</span>`});
+</script></body></html>

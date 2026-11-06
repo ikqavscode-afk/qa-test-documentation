@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Симулятор решения о релизе — Яндекс Метро</title><link rel="stylesheet" href="site.css"></head>
+<body><main><h1>Симулятор решения о релизе</h1><p class="sub">Отметьте баги, которые будут исправлены до релиза. Решение рассчитывается по рискам: серьёзность, наличие обхода и влияние на основные сценарии. Модель учебная.</p>
+<div id="nav" class="row"></div>
+<div class="card" id="verdict"></div>
+<div class="row"><button id="rec" class="p">Моя рекомендация</button><button id="all">Исправить всё</button><button id="none">Ничего</button></div>
+<div id="list"></div>
+<p class="mut">Правила: открытый critical без обхода — No-Go; открытые critical с обходом — Conditional Go; только major — Go с известными ограничениями.</p></main>
+<script src="site.js"></script><script>
+nav();let B=[],fix=new Set();
+const W={critical:5,major:2,minor:1};
+const BY={'Б3':{work:false},'Б6':{work:true},'Б7':{work:true}};
+const REC=['Б3'];
+function draw(){const open=B.filter(b=>!fix.has(b.id));
+const openCrit=open.filter(b=>b.severity=='critical');
+const noWork=openCrit.filter(b=>!(BY[b.id]&&BY[b.id].work));
+const risk=open.reduce((s,b)=>s+W[b.severity],0),max=B.reduce((s,b)=>s+W[b.severity],0);
+let v,c,t;if(noWork.length){v='🔴 No-Go';t=`Открыт критический баг без обхода: ${noWork.map(b=>b.id).join(', ')}.`}else if(openCrit.length){v='🟡 Conditional Go';t=`Критические баги с обходом остаются: ${openCrit.map(b=>b.id).join(', ')}. Нужна запись об известных проблемах и план исправления.`}else if(open.length){v='🟢 Go с ограничениями';t='Критических багов нет; остаётся бэклог стандартных дефектов.'}else{v='🟢 Go';t='Открытых багов нет.'}
+$('#verdict').innerHTML=`<div class="num">${v}</div><p>${t}</p><p class="mut">Остаточный риск: <b>${risk}</b> из ${max} баллов (critical = 5, major = 2).</p>`;
+$('#list').innerHTML=B.map(b=>`<div class="card"><label style="display:flex;gap:10px;cursor:pointer"><input type="checkbox" data-i="${b.id}" ${fix.has(b.id)?'checked':''}><span><span class="tag ${b.severity}">${b.severity}</span> <b>${b.id}</b> · ${esc(b.title)}<br><small>${esc(b.area_ru)}${BY[b.id]?(BY[b.id].work?' · есть обход':' · обхода нет'):''}</small></span></label></div>`).join('')}
+load('sprint4-bugs.json').then(d=>{B=d;REC.forEach(i=>fix.add(i));draw();
+$('#list').addEventListener('change',e=>{e.target.checked?fix.add(e.target.dataset.i):fix.delete(e.target.dataset.i);draw()});
+$('#rec').onclick=()=>{fix=new Set(REC);draw()};$('#all').onclick=()=>{fix=new Set(B.map(b=>b.id));draw()};$('#none').onclick=()=>{fix=new Set();draw()}});
+</script></body></html>

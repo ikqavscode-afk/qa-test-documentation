@@ -21,3 +21,9 @@
 - {name: "area: card", color: "5319E7", description: "Добавление карты"}
 - {name: "sprint-2", color: "BFD4F2", description: "Яндекс Маршруты: валидация и расчёт"}
 - {name: "sprint-3", color: "BFD4F2", description: "Каршеринг: форма бронирования"}
+- {name: "area: gestures", color: "5319E7", description: "Жесты и карта"}
+- {name: "area: orientation", color: "5319E7", description: "Смена ориентации"}
+- {name: "area: history", color: "5319E7", description: "История"}
+- {name: "area: network", color: "5319E7", description: "Сеть"}
+- {name: "area: time-theme", color: "5319E7", description: "Время и тема"}
+- {name: "sprint-4", color: "BFD4F2", description: "Яндекс Метро для Android"}

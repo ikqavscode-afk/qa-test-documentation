@@ -37,6 +37,7 @@ small{color:var(--mut)}code{background:var(--bd);padding:1px 6px;border-radius:4
     <button data-t="oracle">Оракул FEW HICCUPS</button>
     <button data-t="sev">Серьёзность бага</button>
     <button data-t="lay">Верстка: генератор</button>
+    <button data-t="mob">Мобильные проверки</button>
     <button data-t="ret">Ретест</button>
     <span style="flex:1"></span><small id="cnt"></small>
     <button id="copy" class="p">Скопировать как Markdown</button>
@@ -79,6 +80,15 @@ small{color:var(--mut)}code{background:var(--bd);padding:1px 6px;border-radius:4
 <div id="genout"></div>
 <div class="row"><button id="gencopy" class="hide">Скопировать как Markdown</button></div>
 <p><small>Дальше: <a href="sprint3/">материалы спринта 3 — реестр багов, матрица браузеров, серые зоны и тренажёр</a>.</small></p>
+</section></div>
+
+<div id="mob" class="hide"><section>
+<h2>Генератор мобильных проверок</h2>
+<p><small>Отметьте факторы, которые нужно проверить, — получите список проверок для мобильного приложения.</small></p>
+<div id="mobfactors"></div>
+<div class="row"><button class="p" id="mobgen">Сформировать</button><button id="mobcopy" class="hide">Скопировать как Markdown</button></div>
+<div id="mobout"></div>
+<p><small>Пример применения: <a href="metro/">Яндекс Метро для Android — регрессия и решение о релизе</a>.</small></p>
 </section></div>
 
 <div id="ret" class="hide"><section>
@@ -132,7 +142,7 @@ $("#list").addEventListener("change",e=>{st[e.target.id]=e.target.checked;localS
 $("#reset").onclick=()=>{st={};localStorage.removeItem(KEY);paint()};
 $("#copy").onclick=()=>{const md=[...document.querySelectorAll("#list section")].map(s=>"### "+s.querySelector("h2").textContent+"\n"+[...s.querySelectorAll("label")].map(l=>`- [${l.querySelector("input").checked?"x":" "}] ${l.textContent.trim()}`).join("\n")).join("\n\n");
 navigator.clipboard.writeText(md).then(()=>{const t=$("#toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1500)})};
-document.querySelectorAll(".tabs [data-t]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs [data-t]").forEach(x=>x.classList.toggle("on",x===b));["list","oracle","sev","lay","ret"].forEach(id=>$("#"+id).classList.toggle("hide",id!==b.dataset.t))});
+document.querySelectorAll(".tabs [data-t]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs [data-t]").forEach(x=>x.classList.toggle("on",x===b));["list","oracle","sev","lay","mob","ret"].forEach(id=>$("#"+id).classList.toggle("hide",id!==b.dataset.t))});
 const SEV=[["Blocker","High"],["Critical","High"],["Major","Medium"],["Minor / Trivial","Low"]];
 document.querySelectorAll("[name=s]").forEach(r=>r.onchange=()=>{const[a,b]=SEV[r.value];$("#sevout").innerHTML=`Серьёзность: <b>${a}</b> · Приоритет: <b>${b}</b>`});
 
@@ -147,10 +157,23 @@ let gen=[];
 $("#gen").onclick=()=>{const t=$("#etype").value,n=$("#ename").value.trim()||t;gen=LAY[t].map(x=>`${t} «${n.replace(/^[^«]*«|»$/g,"")}» — ${x}`);
 $("#genout").innerHTML=gen.map((x,i)=>`<label><input type="checkbox"><span>${x}</span></label>`).join("");$("#gencopy").classList.remove("hide")};
 $("#gencopy").onclick=()=>{navigator.clipboard.writeText(gen.map(x=>"- [ ] "+x).join("\n")).then(()=>{const t=$("#toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1500)})};
-const RET=["Получена новая сборка, зафиксирована версия","Исправленные баги сверены с реестром","Ретест багов: сначала Critical, затем Major, Minor","Регрессия: успешное бронирование от адресов до окна «Машина забронирована»","Регрессия: окна прав, способа оплаты и добавления карты","Регрессия: кнопка «Забронировать» во всех состояниях","Проверено в двух окружениях (браузер и разрешение)","Пропущенные и заблокированные проверки выполнены","Статусы обновлены, отчёт о готовности пересобран","Новые дефекты оформлены отдельными баг-репортами"];
+const RET=["Мобильное приложение: ретест Critical-багов на эмуляторе и на реальном устройстве","Получена новая сборка, зафиксирована версия","Исправленные баги сверены с реестром","Ретест багов: сначала Critical, затем Major, Minor","Регрессия: успешное бронирование от адресов до окна «Машина забронирована»","Регрессия: окна прав, способа оплаты и добавления карты","Регрессия: кнопка «Забронировать» во всех состояниях","Проверено в двух окружениях (браузер и разрешение)","Пропущенные и заблокированные проверки выполнены","Статусы обновлены, отчёт о готовности пересобран","Новые дефекты оформлены отдельными баг-репортами"];
 let rs=JSON.parse(localStorage.getItem("qa-retest-v1")||"{}");
 $("#retlist").innerHTML=RET.map((t,i)=>`<label><input type="checkbox" data-r="${i}" ${rs[i]?"checked":""}><span>${t}</span></label>`).join("");
 $("#retlist").addEventListener("change",e=>{rs[e.target.dataset.r]=e.target.checked;localStorage.setItem("qa-retest-v1",JSON.stringify(rs))});
+
+const MOB={"Ориентация экрана":["масштаб и положение карты сохраняются при повороте","положение карточек сохраняется","поля ввода расположены верно в обеих ориентациях"],
+"Жесты":["свайп по карте и по карточкам","пинч и спред — масштабирование","лонг-тап не сдвигает карту"],
+"Сеть":["переключение 3G / LTE / Wi-Fi","обрыв и восстановление связи","авиарежим — уведомление об ошибке"],
+"Прерывания":["входящий звонок во время действия","push-уведомление не сбивает ввод","переключение между приложениями и возврат"],
+"Режимы устройства":["энергосбережение","низкий заряд батареи","блокировка и разблокировка экрана"],
+"Установка и обновление":["чистая установка","обновление без потери данных"],
+"Системные настройки":["масштаб интерфейса и шрифта","тёмная тема и автосмена","смена языка, часовой пояс"]};
+$("#mobfactors").innerHTML=Object.keys(MOB).map((k,i)=>`<label><input type="checkbox" class="mf" value="${k}" ${i<3?"checked":""}><span>${k}</span></label>`).join("");
+let mobList=[];
+$("#mobgen").onclick=()=>{mobList=[];document.querySelectorAll(".mf:checked").forEach(c=>MOB[c.value].forEach(x=>mobList.push(c.value+" — "+x)));
+$("#mobout").innerHTML=mobList.map(x=>`<label><input type="checkbox"><span>${x}</span></label>`).join("");$("#mobcopy").classList.remove("hide")};
+$("#mobcopy").onclick=()=>{navigator.clipboard.writeText(mobList.map(x=>"- [ ] "+x).join("\n")).then(()=>{const t=$("#toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1500)})};
 paint();
 </script>
 </body>

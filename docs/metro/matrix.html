@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Трассировка — Яндекс Метро</title><link rel="stylesheet" href="site.css"></head>
+<body><main><h1>Трассировка проверок</h1><p class="sub">Функциональные (Ф) и регрессионные (Р) проверки, их статусы и связанные баги. Статус «Blocked» и «Skipped» означает, что проверка не была выполнена.</p>
+<div id="nav" class="row"></div>
+<div class="row"><select id="kind"><option value="">Все проверки</option><option value="functional">Функциональные (Ф)</option><option value="regression">Регрессионные (Р)</option></select><select id="st"><option value="">Все статусы</option><option>Passed</option><option>Failed</option><option>Blocked</option><option>Skipped</option></select><input id="q" placeholder="Поиск…" style="flex:1;min-width:160px"></div>
+<div id="count" class="mut"></div>
+<div class="card" style="overflow:auto"><table><thead><tr><th>ID</th><th>Раздел</th><th>Проверка</th><th>Статус</th><th>Баги</th></tr></thead><tbody id="rows"></tbody></table></div></main>
+<script src="site.js"></script><script>
+nav();let C=[];
+function draw(){const k=$('#kind').value,s=$('#st').value,q=$('#q').value.toLowerCase();
+const r=C.filter(c=>(!k||c.kind==k)&&(!s||c.status==s)&&(!q||(c.title+c.section+c.id).toLowerCase().includes(q)));
+$('#count').textContent=`Показано ${r.length} из ${C.length}`;
+$('#rows').innerHTML=r.map(c=>`<tr><td>${c.id}</td><td>${esc(c.section)}</td><td>${esc(c.title)}</td><td class="${c.status}">${c.status}</td><td>${c.bugs.join(', ')}</td></tr>`).join('')}
+load('sprint4-checks.json').then(d=>{C=d;['kind','st','q'].forEach(i=>$('#'+i).addEventListener('input',draw));draw()});
+</script></body></html>

@@ -6,7 +6,7 @@
 
   python3 scripts/create_issues.py            # сухой прогон: только печатает, что будет создано
   python3 scripts/create_issues.py --apply    # создать метки и Issues в репозитории
-  python3 scripts/create_issues.py --apply --sprint 3   # только спринт 3 (2, 3 или all)
+  python3 scripts/create_issues.py --apply --sprint 3   # только спринт 3 (2, 3, 4 или all)
 """
 import json, os, subprocess, sys, pathlib, re
 
@@ -15,15 +15,16 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "ikqavscode-afk/qa-test-documentation
 RAW = {
     "2": f"https://raw.githubusercontent.com/{REPO}/main/sprint-2-YaM/bug-reports/screenshots/",
     "3": f"https://raw.githubusercontent.com/{REPO}/main/spritn-3-CarSh/bug-reports/screenshots/",
+    "4": f"https://raw.githubusercontent.com/{REPO}/main/spritn-4-YaMetro/bug-reports/screenshots/",
 }
-DATA = {"2": "data/bugs.json", "3": "data/sprint3-bugs.json"}
+DATA = {"2": "data/bugs.json", "3": "data/sprint3-bugs.json", "4": "data/sprint4-bugs.json"}
 PRIO = {"critical": "high", "major": "medium", "minor": "low"}
 AREA = {"Часы": "hours", "Минуты": "minutes", "Откуда": "address-from", "Куда": "address-to", "Расчёт": "calculation"}
 SEV_RU = {"critical": "Critical (критический)", "major": "Major (стандартный)", "minor": "Minor (желательный)"}
 apply = "--apply" in sys.argv
-SPRINTS = ["2", "3"] if "--sprint" not in sys.argv else [sys.argv[sys.argv.index("--sprint") + 1]]
+SPRINTS = ["2", "3", "4"] if "--sprint" not in sys.argv else [sys.argv[sys.argv.index("--sprint") + 1]]
 if SPRINTS == ["all"]:
-    SPRINTS = ["2", "3"]
+    SPRINTS = ["2", "3", "4"]
 
 
 def run(cmd):
@@ -68,7 +69,7 @@ def main():
         existing = {i["title"] for i in json.loads(out)}
     for sp in SPRINTS:
         for b in json.loads((ROOT / DATA[sp]).read_text()):
-            title = f"[С{sp}][{b['id']}] {b['title']}" if sp == "3" else f"[{b['id']}] {b['title']}"
+            title = f"[С{sp}][{b['id']}] {b['title']}" if sp in ("3", "4") else f"[{b['id']}] {b['title']}"
             if title in existing:
                 print("уже есть, пропуск:", b["id"])
                 continue
