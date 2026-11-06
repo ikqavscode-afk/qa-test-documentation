@@ -8,16 +8,11 @@
   python3 scripts/create_issues.py --apply    # создать метки и Issues в репозитории
   python3 scripts/create_issues.py --apply --sprint 3   # только спринт 3 (2, 3, 4 или all)
 """
-import json, os, subprocess, sys, pathlib, re
+import json, subprocess, sys, re
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
-REPO = os.environ.get("GITHUB_REPOSITORY", "ikqavscode-afk/qa-test-documentation")
-RAW = {
-    "2": f"https://raw.githubusercontent.com/{REPO}/main/sprint-2-Routes/bug-reports/screenshots/",
-    "3": f"https://raw.githubusercontent.com/{REPO}/main/spritn-3-CarSh/bug-reports/screenshots/",
-    "4": f"https://raw.githubusercontent.com/{REPO}/main/spritn-4-Metro/bug-reports/screenshots/",
-}
-DATA = {"2": "data/bugs.json", "3": "data/sprint3-bugs.json", "4": "data/sprint4-bugs.json"}
+from config import BUG_DATA as DATA, REPO, ROOT, raw_url
+
+RAW = {sp: raw_url(sp) for sp in DATA}
 PRIO = {"critical": "high", "major": "medium", "minor": "low"}
 AREA = {"Часы": "hours", "Минуты": "minutes", "Откуда": "address-from", "Куда": "address-to", "Расчёт": "calculation"}
 SEV_RU = {"critical": "Critical (критический)", "major": "Major (стандартный)", "minor": "Minor (желательный)"}
@@ -38,7 +33,7 @@ def body(b, sp):
     steps = "\n".join(b["steps"])
     shot = f"\n\n### Скриншот\n![{b['id']}]({RAW[sp]}{b['screenshot']})" if b.get("screenshot") else ""
     if b.get("video_gif"):
-        shot += f"\n\n### Видео (GIF)\n![{b['id']} GIF]({RAW[sp].replace('screenshots', 'media')}{b['video_gif']})"
+        shot += f"\n\n### Видео (GIF)\n![{b['id']} GIF]({raw_url(sp, 'media')}{b['video_gif']})"
     return f"""**ID:** `{b['id']}` · {('**Тест-кейс:** `' + b['test_case'] + '` · ') if b.get('test_case') else ''}**Серьёзность:** {SEV_RU[b['severity']]}
 
 ### Предусловия
