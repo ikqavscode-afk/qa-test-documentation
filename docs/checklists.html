@@ -18,7 +18,8 @@
 </main>
 <script src="sprint3/site.js"></script>
 <script>
-$('#nav').innerHTML=[['index.html','Чек-лист тестировщика'],['sprint3/index.html','Спринт 3: каршеринг'],['metro/index.html','Итоговый: Яндекс Метро']].map(([h,t])=>`<a href="${h}">${t}</a>`).join('');
+function goBack(fb){if(history.length>1&&document.referrer&&new URL(document.referrer).origin===location.origin)history.back();else location.href=fb}
+$('#nav').innerHTML='<button class="back" onclick="goBack(\'index.html\')">← Назад</button>'+[['index.html','Чек-лист тестировщика'],['sprint3/index.html','Спринт 3: каршеринг'],['metro/index.html','Итоговый: Яндекс Метро']].map(([h,t])=>`<a href="${h}">${t}</a>`).join('');
 const KEY='qa-projects-checklist-v1';let S=JSON.parse(localStorage.getItem(KEY)||'{}'),P=[],cur=null,flt='';
 const IC={Passed:'✅',Closed:'✅',Failed:'❌',Reopened:'🔁',Blocked:'⛔',Skipped:'⏭','':'—'};
 const li=a=>`<ul class="l">${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
