@@ -34,6 +34,7 @@
 | [КЭ и граничные значения](https://ikqavscode-afk.github.io/qa-test-documentation/lab/ep.html) | классификация значений, подбор границ, серые зоны (12 полей из форм) |
 | [Таблица принятия решений](https://ikqavscode-afk.github.io/qa-test-documentation/lab/decision.html) | построение всех комбинаций, проверка по эталону, сжатие, экспорт в Markdown; примеры: пицца, форма, кредит, вход и пароли KGramm, регистрация и пароль Помощника |
 | [Найди баг и оформи отчёт](https://ikqavscode-afk.github.io/qa-test-documentation/lab/findbug.html) | поиск дефектов в форме заказа пиццы, проверка полноты баг-репорта |
+| [Валидатор баг-репорта](https://ikqavscode-afk.github.io/qa-test-documentation/lab/report.html) | разбор полей отчёта, 15 проверок полноты и качества, подсказки |
 
 ## Проекты
 

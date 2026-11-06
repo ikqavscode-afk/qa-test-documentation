@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="ru"><head><base target="_blank"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Валидатор баг-репорта</title>
+<link rel="stylesheet" href="../sprint3/site.css"><link rel="stylesheet" href="lab.css"></head>
+<body><main>
+<h1>Валидатор баг-репорта</h1>
+<p class="sub">Вставьте отчёт целиком (по шаблону из репозитория или в свободной форме). Валидатор разберёт поля, проверит полноту и качество и подскажет, что исправить. Текст остаётся в браузере и никуда не отправляется.</p>
+<div id="nav" class="row"></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
+<div class="card"><div class="row"><button id="bad">Пример: слабый отчёт</button><button id="good">Пример: хороший отчёт</button><button id="tpl">Шаблон</button><button id="clr">Очистить</button></div>
+<textarea id="t" spellcheck="false" style="min-height:360px;font-family:ui-monospace,monospace;font-size:.88rem" placeholder="**Заголовок:** ...&#10;| **Серьёзность (severity)** | Major |&#10;| **Приоритет (priority)** | High |&#10;| **Окружение** | ... |&#10;## Шаги воспроизведения&#10;1. ...&#10;## Ожидаемый результат (ОР)&#10;...&#10;## Фактический результат (ФР)&#10;..."></textarea>
+<div class="row"><button class="p" id="go">Проверить</button><span class="mut" id="auto">проверка запускается при вводе</span></div></div>
+<div><div class="card" id="res"><p class="mut">Результат появится здесь.</p></div><div class="card" id="parsed" style="display:none"></div></div>
+</div>
+</main><script src="lab.js"></script><script>
+nav();
+const SEV = ['blocker', 'critical', 'major', 'minor', 'trivial', 'критическая', 'высокая', 'средняя', 'низкая', 'блокирующая', 'значительная', 'незначительная'];
+const PRI = ['high', 'medium', 'low', 'высокий', 'средний', 'низкий'];
+const TPL = `**Заголовок:** [Форма заказа] Количество 11 принимается при максимуме 10
+
+| Поле | Значение |
+|---|---|
+| **Серьёзность (severity)** | Major |
+| **Приоритет (priority)** | Medium |
+| **Окружение** | Windows 11, Chrome 120, сборка 1.0 |
+
+## Шаги воспроизведения
+1. Открыть форму заказа пиццы.
+2. В поле «Количество» ввести 11.
+3. Нажать «Добавить в корзину».
+
+## Ожидаемый результат (ОР)
+Значение 11 не принимается: максимум 10 по требованию.
+
+## Фактический результат (ФР)
+Товар добавлен в корзину с количеством 11.
+
+## Вложения
+Скриншот корзины.
+`;
+const BAD = `**Заголовок:** не работает
+
+| Серьёзность | Blocker |
+| Приоритет | Low |
+
+## Шаги
+Зайти на сайт и всё сломалось. Потом ещё ошибка у меня в почте ivan.petrov@gmail.com.
+
+## ОР
+Должно работать нормально.
+
+## ФР
+Работает плохо.
+`;
+function sect(text, names) {
+  const re = new RegExp('(?:^|\\n)\\s*#{1,4}\\s*(' + names + ')[^\\n]*\\n([\\s\\S]*?)(?=\\n\\s*#{1,4}\\s|$)', 'i');
+  const m = text.match(re); return m ? m[2].trim() : '';
+}
+function row(text, names) {
+  const re = new RegExp('\\|\\s*\\**\\s*(?:' + names + ')[^|]*\\|\\s*([^|\\n]+)\\|', 'i');
+  const m = text.match(re); if (m) return m[1].replace(/\*/g, '').trim();
+  const m2 = text.match(new RegExp('(?:^|\\n)\\s*\\**\\s*(?:' + names + ')[^:\\n]*:\\**\\s*([^\\n]+)', 'i')); return m2 ? m2[1].replace(/\*/g, '').trim() : '';
+}
+function parse(t) {
+  const title = (row(t, 'Заголовок|Название|Title') || (t.match(/^#\s+(.+)$/m) || [])[1] || '').trim();
+  const steps = sect(t, 'Шаги[^\\n]*|Steps[^\\n]*');
+  return { title, sev: row(t, 'Серьёзност[ьи]|Severity'), pri: row(t, 'Приоритет|Priority'), env: row(t, 'Окружение|Environment'),
+    steps, stepsN: steps.split('\n').filter(l => /^\s*(\d+[.)]|[-*])\s+\S/.test(l)).length || steps.split('\n').filter(l => l.trim()).length,
+    exp: sect(t, 'Ожидаемый[^\\n]*|ОР[^\\n]*|Expected[^\\n]*'), act: sect(t, 'Фактический[^\\n]*|ФР[^\\n]*|Actual[^\\n]*'), att: sect(t, 'Вложения[^\\n]*|Attachments[^\\n]*') };
+}
+function validate(t) {
+  const p = parse(t), L = x => x.toLowerCase();
+  const all = [p.title, p.steps, p.exp, p.act].join(' ');
+  const C = [];
+  const add = (lvl, ok, name, hint) => C.push({ lvl, ok, name, hint });
+  add('e', p.title.length >= 15 && p.title.length <= 110, 'Заголовок: 15–110 символов', 'Одна фраза: что не так и при каком условии. Сейчас ' + p.title.length + ' симв.');
+  add('e', p.title.split(/\s+/).filter(Boolean).length >= 4 && !/^(баг|ошибка|глюк|не работает|сломалось)\W*$/i.test(p.title.trim()), 'Заголовок называет объект и проблему', 'Вместо «не работает»: [Область] что именно и когда, например «Количество 11 принимается при максимуме 10».');
+  add('w', !/(а также|, а еще| плюс )/i.test(p.title), 'В заголовке одна проблема', 'Два дефекта лучше оформить двумя отчётами.');
+  add('e', SEV.includes(L(p.sev.replace(/\s*\(.*\)/, ''))), 'Серьёзность из принятого списка', 'Blocker, Critical, Major, Minor, Trivial или русские аналоги.');
+  add('e', PRI.includes(L(p.pri.replace(/\s*\(.*\)/, ''))), 'Приоритет из принятого списка', 'High, Medium, Low или русские аналоги.');
+  add('w', !(/blocker|critical|блокир|критич/i.test(p.sev) && /low|низк/i.test(p.pri)), 'Серьёзность и приоритет согласованы', 'Критичный дефект с низким приоритетом обычно ошибка в оценке.');
+  add('e', /(windows|macos|mac os|linux|android|ios|ubuntu)/i.test(p.env) && /(chrome|firefox|safari|edge|opera|браузер|browser|сборк|версия|приложени)/i.test(p.env), 'Окружение: ОС и браузер или сборка', 'Укажите ОС, браузер или устройство и версию приложения.');
+  add('e', p.stepsN >= 3, 'Не менее 3 шагов воспроизведения', 'Найдено шагов: ' + p.stepsN + '. Нумеруйте шаги, один шаг: одно действие.');
+  add('w', /\d/.test(p.steps) || /[«"“].+[»"”]/.test(p.steps), 'В шагах есть конкретные данные', 'Какое значение ввели, какую кнопку нажали (числа или текст в кавычках).');
+  add('e', p.exp.length >= 12, 'Ожидаемый результат описан', 'Что должно происходить по требованию.');
+  add('e', p.act.length >= 12, 'Фактический результат описан', 'Что произошло на самом деле.');
+  add('e', !!p.exp && !!p.act && L(p.exp) !== L(p.act), 'ОР и ФР различаются', 'Если они одинаковы, это не дефект.');
+  add('w', !/(плох|неудобн|криво|нормальн|как-то|странн|ужасн)/i.test(p.exp + ' ' + p.act), 'Нет оценочных слов в ОР и ФР', 'Описывайте факты: что видите и что ожидали, без «плохо» и «нормально».');
+  add('e', !/([\w.+-]+@[\w-]+\.[\w.]+)|(\+?\d[\d\s()-]{9,})/.test(t), 'Нет личных данных (почта, телефон)', 'Замените на тестовые значения, например user@example.com.');
+  add('w', p.att.length > 3, 'Есть вложения (скриншот, видео, лог)', 'Добавьте раздел «Вложения» и приложите доказательство.');
+  return { p, C };
+}
+function draw() {
+  const t = $('#t').value.trim(); if (!t) { $('#res').innerHTML = '<p class="mut">Результат появится здесь.</p>'; $('#parsed').style.display = 'none'; return; }
+  const { p, C } = validate(t), ok = C.filter(c => c.ok).length, err = C.filter(c => !c.ok && c.lvl === 'e').length, pc = Math.round(ok / C.length * 100);
+  $('#res').innerHTML = `<h3 style="margin:0 0 4px">Готовность: ${ok} из ${C.length} (${pc}%)</h3><div class="bar"><i style="width:${pc}%"></i></div>
+  <p class="${err ? 'bad' : 'ok'}">${err ? 'Исправьте обязательные пункты: ' + err : 'Обязательные пункты выполнены ✓'}</p>
+  <ul class="chk">${C.map(c => `<li class="${c.ok ? 'ok' : c.lvl === 'e' ? 'bad' : 'gz'}">${c.ok ? '✓' : c.lvl === 'e' ? '✗' : '⚠'} ${c.name}${c.ok ? '' : `<br><small class="mut">${esc(c.hint)}</small>`}</li>`).join('')}</ul>`;
+  $('#parsed').style.display = ''; $('#parsed').innerHTML = `<b>Что распознано</b><table style="margin-top:6px">${[['Заголовок', p.title], ['Серьёзность', p.sev], ['Приоритет', p.pri], ['Окружение', p.env], ['Шагов', p.stepsN], ['ОР', p.exp], ['ФР', p.act], ['Вложения', p.att]].map(r => `<tr><td>${r[0]}</td><td>${esc(String(r[1]) || '—')}</td></tr>`).join('')}</table>`;
+}
+$('#t').oninput = draw; $('#go').onclick = draw;
+$('#bad').onclick = () => { $('#t').value = BAD; draw(); };
+$('#good').onclick = () => { $('#t').value = TPL; draw(); };
+$('#tpl').onclick = e => { copy(TPL, e.target); };
+$('#clr').onclick = () => { $('#t').value = ''; draw(); };
+</script></body></html>

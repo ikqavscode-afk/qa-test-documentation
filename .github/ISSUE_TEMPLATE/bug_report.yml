@@ -5,7 +5,7 @@ labels: ["bug", "status: open"]
 body:
   - type: input
     id: id
-    attributes: {label: ID баг-репорта, placeholder: "ЯМ-T2-Б1"}
+    attributes: {label: ID баг-репорта, placeholder: "МР-T2-Б1"}
     validations: {required: true}
   - type: dropdown
     id: severity
