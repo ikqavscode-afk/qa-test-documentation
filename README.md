@@ -23,7 +23,7 @@
 | Спринт 2 · Маршруты | форма маршрута: время, адреса, расчёт | тест-дизайн, классы эквивалентности, границы | [checklist.md](sprint-2-Routes/checklist.md) |
 | Спринт 3 · Каршеринг | форма бронирования | вёрстка, кроссбраузерность, логика окон | [checklist.md](spritn-3-CarSh/checklist.md) |
 | Спринт 4 · Метро | мобильное приложение Android | регрессия, мобильные факторы, решение о релизе | [checklist.md](spritn-4-Metro/checklist.md) |
-| Спринт 5 · Прилавок | бэкенд: REST и XML API | API-тестирование, Postman, HTTP-статусы, баг-репорты | [Sprint_5](https://github.com/ikqavscode-afk/Sprint_5) (отдельный репозиторий) |
+| Спринт 5 · Прилавок | бэкенд: REST и XML API | API-тестирование, Postman, HTTP-статусы, баг-репорты | [Sprint_5](https://github.com/ikqavscode-afk/Sprint_5) (отдельный репозиторий), [разбор API Places](https://ikqavscode-afk.github.io/Sprint_5/places.html) |
 
 ## Тренажёры
 
@@ -43,7 +43,7 @@
 | [sprint-2-Routes](sprint-2-Routes/) | Спринт 2: «Маршруты» — валидация полей и расчёт стоимости/времени поездки |
 | [spritn-3-CarSh](spritn-3-CarSh/) | Спринт 3: форма бронирования каршеринга — верстка и логика, 43 бага, серые зоны, отчёт о готовности |
 | [spritn-4-Metro](spritn-4-Metro/) | Итоговый проект (спринт 4): «Метро» для Android — регрессия после рефакторинга и решение о релизе |
-| [Sprint_5](https://github.com/ikqavscode-afk/Sprint_5) | Спринт 5: «Прилавок» — тестирование API: 102 проверки, 45 дефектов, коллекция Postman, интерактивная консоль ([сайт](https://ikqavscode-afk.github.io/Sprint_5/)) |
+| [Sprint_5](https://github.com/ikqavscode-afk/Sprint_5) | Спринт 5: «Прилавок» — тестирование API: 102 проверки, 45 дефектов, коллекция Postman, интерактивная консоль ([сайт](https://ikqavscode-afk.github.io/Sprint_5/)); дополнительно: [разбор API Places](https://ikqavscode-afk.github.io/Sprint_5/places.html) — 48 проверок, границы, два варианта таблицы решений, серые зоны |
 
 ## Статистика (автообновляется)
 
