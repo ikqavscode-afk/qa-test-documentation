@@ -1,6 +1,6 @@
-# Яндекс Метро (Android) — регрессия и приёмка релиза
+# Метро (Android) — регрессия и приёмка релиза
 
-Демо-версия итогового проекта: тестирование мобильного приложения «Яндекс Метро» для Android после рефакторинга (версия 3.6, ранее 2.13) и решение о публикации в Google Play.
+Демо-версия итогового проекта: тестирование мобильного приложения «Метро» для Android после рефакторинга (версия 3.6, ранее 2.13) и решение о публикации в Google Play.
 
 🔗 **Интерактивные материалы:** [реестр багов](https://ikqavscode-afk.github.io/qa-test-documentation/metro/bugs.html) · [трассировка проверок](https://ikqavscode-afk.github.io/qa-test-documentation/metro/matrix.html) · [серые зоны](https://ikqavscode-afk.github.io/qa-test-documentation/metro/gray-zones.html) · [симулятор решения о релизе](https://ikqavscode-afk.github.io/qa-test-documentation/metro/release.html)
 

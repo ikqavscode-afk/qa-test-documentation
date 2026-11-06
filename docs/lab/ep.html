@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="ru"><head><base target="_blank"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Тренажёр: классы эквивалентности и границы</title>
+<link rel="stylesheet" href="../sprint3/site.css"><link rel="stylesheet" href="lab.css"></head>
+<body><main>
+<h1>Классы эквивалентности и граничные значения</h1>
+<p class="sub">Выберите поле, прочитайте требование и пройдите два режима: классификация значений и самостоятельный подбор границ.</p>
+<div id="nav" class="row"></div>
+<div class="row"><label for="task"><b>Поле:</b></label><select id="task"></select><span class="mut" id="prog"></span></div>
+<div id="spec" class="card"></div>
+<div class="tabs"><button data-m="cls" class="on">1. Классификация значений</button><button data-m="bv">2. Назови границы</button></div>
+<div id="box" class="card"></div>
+</main><script src="lab.js"></script><script>
+nav();
+// Требования к полям (упрощено по мотивам типовых форм). min:null значит нижняя граница в требовании не задана.
+const T = [
+  {id:'amount',name:'Кредитный калькулятор · Сумма кредита',kind:'num',unit:'руб.',min:10000,max:10000000,req:['Обязательное поле.','Можно вводить только числа.','Допустимо от 10 000 до 10 000 000 включительно.'],vals:[9999,10000,10001,500000,9999999,10000000,10000001,'abc','']},
+  {id:'rate',name:'Кредитный калькулятор · Процентная ставка',kind:'num',unit:'%',min:null,max:100,req:['Обязательное поле.','Можно вводить только числа.','Ввод ограничен до 100 включительно.'],vals:[100,101,99,50,0,-1,100.5,'abc',''],gray:'Нижняя граница в требовании не указана: допустимы ли 0 и отрицательные значения, неизвестно. Это вопрос аналитику.'},
+  {id:'term',name:'Кредитный калькулятор · Срок погашения',kind:'num',unit:'мес.',min:1,max:360,req:['Обязательное поле.','Можно вводить только числа.','Допустимо от 1 до 360 включительно.'],vals:[0,1,2,180,359,360,361,'abc','']},
+  {id:'qty',name:'Заказ пиццы · Количество',kind:'num',unit:'шт.',min:1,max:10,req:['Количество пицц за один заказ от 1 до 10 включительно.','По умолчанию стоит 1.'],vals:[0,1,2,5,9,10,11,'']},
+  {id:'name',name:'Форма обратной связи · Имя (длина)',kind:'len',unit:'символов',min:2,max:30,req:['Обязательное поле.','Длина имени от 2 до 30 символов.','Допустимы буквы, пробелы и дефисы (здесь проверяем только длину).'],vals:[1,2,3,15,29,30,31,'']},
+  {id:'phone',name:'Форма обратной связи · Телефон (число цифр)',kind:'len',unit:'цифр',min:7,max:14,req:['Обязательное поле.','Допустимы только цифры.','От 7 до 14 цифр без пробелов и дефисов.'],vals:[6,7,8,10,13,14,15,'']},
+  {id:'kguser',name:'KGramm · Регистрация: имя (длина)',kind:'len',unit:'символов',min:3,max:null,grayAbove:50,req:['Английские буквы, цифры и подчёркивания.','Минимальная длина 3 символа.'],vals:[2,3,4,20,100,''],gray:'Максимальная длина имени в требовании не указана: допустима ли очень длинная строка, неизвестно. Это вопрос аналитику.'},
+  {id:'kgpass',name:'KGramm · Регистрация: пароль (длина)',kind:'len',unit:'символов',min:8,max:30,req:['Длина от 8 до 30 символов.','Минимум два вида символов (буквы, цифры, знаки). Здесь проверяем только длину, виды символов разбирайте в таблице решений.'],vals:[7,8,9,20,29,30,31,'']},
+  {id:'kgcat',name:'KGramm · Имя кота (длина)',kind:'len',unit:'символов',min:2,max:25,req:['Обязательное поле.','Русские и английские буквы, пробелы и тире.','Длина от 2 до 25 символов (ошибки «Слишком короткое имя», «Слишком длинное имя»).'],vals:[1,2,3,12,24,25,26,'']},
+  {id:'hpuser',name:'Помощник · Регистрация: имя пользователя (длина)',kind:'len',unit:'символов',min:3,max:30,req:['Только русские и английские буквы.','Длина от 3 до 30 символов.','Уникально в системе (здесь проверяем только длину).'],vals:[2,3,4,15,29,30,31,'']},
+  {id:'hppass',name:'Помощник · Регистрация: пароль (длина)',kind:'len',unit:'символов',min:7,max:20,req:['Английские буквы, цифры, знаки пунктуации.','Минимум одна буква и одна цифра (здесь только длина, остальное в таблице решений).','Длина от 7 до 20 символов.'],vals:[6,7,8,14,19,20,21,'']},
+  {id:'msg',name:'Форма обратной связи · Сообщение (длина)',kind:'len',unit:'символов',min:10,max:500,req:['Обязательное поле.','Длина сообщения от 10 до 500 символов.'],vals:[9,10,11,250,499,500,501,'']}
+];
+const P = store('lab-ep-v1', {});
+const tsel = $('#task'); T.forEach(t => tsel.add(new Option(t.name, t.id)));
+let cur = T[0], mode = 'cls', ans = {};
+const ev = (t, v) => {
+  if (v === '') return 'invalid';
+  if (typeof v === 'string') return 'invalid';
+  if (t.min == null && v <= 0) return 'gray';
+  if (t.max == null) return v < t.min ? 'invalid' : v > t.grayAbove ? 'gray' : 'valid';
+  if ((t.min != null && v < t.min) || v > t.max) return 'invalid';
+  return 'valid';
+};
+const lab = (t, v) => v === '' ? 'пусто (поле не заполнено)' : typeof v === 'string' ? `текст «${v}»` : t.kind === 'num' ? `${v} ${t.unit}` : `${v} ${t.unit}`;
+const RU = { valid: 'Допустимо', invalid: 'Недопустимо', gray: 'Серая зона' };
+function head() {
+  const p = P.get()[cur.id] || {};
+  $('#prog').textContent = (p.cls != null ? ` Классификация: ${p.cls}%` : '') + (p.bv != null ? ` · Границы: ${p.bv}%` : '');
+  $('#spec').innerHTML = `<h3 style="margin:0 0 6px">${esc(cur.name)}</h3><div class="spec"><b>Требование:</b><ul style="margin:4px 0">${cur.req.map(r => `<li>${esc(r)}</li>`).join('')}</ul></div>`;
+}
+function save(k, v) { const a = P.get(); a[cur.id] = { ...(a[cur.id] || {}), [k]: v }; P.set(a); head(); }
+function cls() {
+  const box = $('#box'); const done = Object.keys(ans).length === cur.vals.length;
+  box.innerHTML = `<p>Отметьте для каждого значения, как поведёт себя поле по требованию.</p>` +
+    cur.vals.map((v, i) => `<div class="val"><code>${esc(lab(cur, v))}</code><div class="seg" data-i="${i}">${['valid', 'invalid', 'gray'].map(k => `<button data-k="${k}">${RU[k]}</button>`).join('')}</div></div>`).join('') +
+    `<div class="row"><button class="p" id="chk">Проверить</button><button id="rs">Сбросить</button></div><div id="res"></div>`;
+  $$('.seg button', box).forEach(b => b.onclick = () => { const i = b.parentNode.dataset.i; ans[i] = b.dataset.k; $$('button', b.parentNode).forEach(x => x.classList.toggle('sel', x === b)); });
+  $('#rs').onclick = () => { ans = {}; cls(); };
+  $('#chk').onclick = () => {
+    if (Object.keys(ans).length < cur.vals.length) { $('#res').innerHTML = '<p class="bad">Ответьте на все значения.</p>'; return; }
+    let ok = 0;
+    cur.vals.forEach((v, i) => { const e = ev(cur, v), seg = $(`.seg[data-i="${i}"]`); $$('button', seg).forEach(b => { b.disabled = true; b.classList.remove('sel'); if (b.dataset.k === e) b.classList.add('right'); else if (b.dataset.k === ans[i]) b.classList.add('wrong'); }); if (ans[i] === e) ok++; });
+    const pc = Math.round(ok / cur.vals.length * 100); save('cls', pc);
+    $('#res').innerHTML = `<h3>Результат: ${ok} из ${cur.vals.length} (${pc}%)</h3>` + (cur.gray ? `<div class="note"><b>Серая зона.</b> ${esc(cur.gray)}</div>` : '') +
+      `<p><b>Эталон классов:</b></p><table><tr><th>Класс</th><th>Значения</th></tr>${['valid', 'invalid', 'gray'].map(k => { const x = cur.vals.filter(v => ev(cur, v) === k); return x.length ? `<tr><td>${RU[k]}</td><td>${x.map(v => esc(lab(cur, v))).join('; ')}</td></tr>` : '' }).join('')}</table>`;
+  };
+}
+function expB(t) { const a = []; if (t.min != null) a.push(t.min - 1, t.min, t.min + 1); if (t.max != null) a.push(t.max - 1, t.max, t.max + 1); return a; }
+function bv() {
+  const box = $('#box');
+  box.innerHTML = `<p>Введите граничные значения через запятую или пробел (по две-три точки у каждой границы: на границе, ниже и выше).</p>
+  <div class="row"><input id="in" style="flex:1;min-width:240px" placeholder="например: 9, 10, 11, ..."><button class="p" id="chk">Проверить</button></div><div id="res"></div>`;
+  $('#chk').onclick = () => {
+    const got = new Set(($('#in').value.match(/-?\d+(\.\d+)?/g) || []).map(Number)); const e = expB(cur);
+    const hit = e.filter(x => got.has(x)), miss = e.filter(x => !got.has(x)), extra = [...got].filter(x => !e.includes(x));
+    const pc = Math.round(hit.length / e.length * 100); save('bv', pc);
+    $('#res').innerHTML = `<h3>Найдено ${hit.length} из ${e.length}</h3><div class="bar"><i style="width:${pc}%"></i></div>
+    ${miss.length ? `<p class="bad">Не хватает: <b>${miss.join(', ')}</b></p>` : '<p class="ok">Все границы названы ✓</p>'}
+    ${extra.length ? `<p class="mut">Дополнительные значения (не граничные): ${extra.join(', ')}. Они подходят как значения «внутри» класса.</p>` : ''}
+    ${cur.gray ? `<div class="note"><b>Серая зона.</b> ${esc(cur.gray)} Поэтому в эталоне только та граница, которая задана в требовании.</div>` : ''}
+    <p class="mut">Эталон: ${e.join(', ')}. Для каждой границы берём значение на ней, на шаг ниже и на шаг выше.</p>`;
+  };
+}
+function render() { head(); mode === 'cls' ? cls() : bv(); }
+tsel.onchange = () => { cur = T.find(t => t.id === tsel.value); ans = {}; render(); };
+$$('.tabs button').forEach(b => b.onclick = () => { mode = b.dataset.m; $$('.tabs button').forEach(x => x.classList.toggle('on', x === b)); ans = {}; render(); });
+render();
+</script></body></html>

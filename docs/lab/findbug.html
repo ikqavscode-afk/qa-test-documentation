@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="ru"><head><base target="_blank"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Тренажёр: найди баг и оформи отчёт</title>
+<link rel="stylesheet" href="../sprint3/site.css"><link rel="stylesheet" href="lab.css"></head>
+<body><main>
+<h1>Найди баг и оформи отчёт</h1>
+<p class="sub">Ниже форма заказа пиццы. В каждой сборке случайно включены 4 дефекта из 6. Проверьте форму по требованию, найдите их и оформите баг-репорты.</p>
+<div id="nav" class="row"></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+<div>
+<div class="card"><h3 style="margin:0 0 6px">Требование</h3><ul style="margin:0;padding-left:18px;font-size:.93rem">
+<li>Пицца: Маргарита (500), Пепперони (600), Гавайская (650), Четыре сыра (700).</li>
+<li>Размер: маленькая (без наценки), средняя (+10%), большая (+20%). Корж: тонкий или толстый.</li>
+<li>Топпинги: цыпленок 60, ветчина 65, сыр 50, грибы 45, томаты 40, огурчики 35.</li>
+<li>Гавайская и «Четыре сыра» доступны только в среднем и большом размере. Маленькая только с толстым коржем.</li>
+<li>Количество от 1 до 10 включительно.</li>
+<li>При загрузке: Маргарита, большая, толстый корж, количество 1.</li>
+<li>Цена = (цена пиццы + наценка за размер + топпинги) × количество. Пример: Маргарита, большая, тонкий, цыпленок = 500 + 100 + 60 = 660.</li>
+<li>Кнопка «Заказать» отправляет заказ, корзина очищается, показывается «Заказ успешно отправлен!».</li></ul></div>
+<div class="card pizza" id="form"></div>
+</div>
+<div>
+<div class="card"><h3 style="margin:0 0 6px">Баг-репорт</h3>
+<label class="f">Название</label><input id="t" style="width:100%" placeholder="Что и где не так, коротко">
+<label class="f">Предусловия и окружение</label><input id="env" style="width:100%" placeholder="Браузер, ОС, версия сборки, состояние формы">
+<label class="f">Шаги воспроизведения (каждый с новой строки)</label><textarea id="st" placeholder="1. Открыть форму&#10;2. ...&#10;3. ..."></textarea>
+<label class="f">Ожидаемый результат</label><textarea id="ex" style="min-height:50px"></textarea>
+<label class="f">Фактический результат</label><textarea id="ac" style="min-height:50px"></textarea>
+<div class="row"><select id="sv"><option value="">Серьёзность</option><option>Критическая</option><option>Высокая</option><option>Средняя</option><option>Низкая</option></select>
+<button class="p" id="go">Проверить отчёт</button></div>
+<div id="rep"></div></div>
+<div class="card"><b>Найдено: <span id="fc">0</span> из 4</b> <div class="bar" style="margin:6px 0"><i id="fb"></i></div>
+<div class="row"><button id="rev">Показать разбор</button><button id="nw">Новая сборка</button></div><div id="an"></div></div>
+</div></div>
+</main><script src="lab.js"></script><script>
+nav();
+const PZ = { 'Маргарита': 500, 'Пепперони': 600, 'Гавайская': 650, 'Четыре сыра': 700 }, TP = { 'Цыпленок': 60, 'Ветчина': 65, 'Сыр': 50, 'Грибы': 45, 'Томаты': 40, 'Огурчики': 35 };
+// Зашитые дефекты. k — признак совпадения в тексте отчёта (все группы должны найтись).
+const BUGS = [
+  { id: 'D1', n: 'Количество: допускается 11 (максимум по требованию 10)', k: [/(11|одиннадцат|больше 10|более 10|свыше 10|выше 10|верхн|граничн)/, /(количеств|штук|шт)/] },
+  { id: 'D2', n: 'Большой размер: наценка 10% вместо 20%', k: [/(больш)/, /(цен|стоимост|сумм|наценк|10\s*%|20\s*%|расч)/] },
+  { id: 'D3', n: 'Маленькая пицца доступна с тонким коржем', k: [/(мал)/, /(тонк)/] },
+  { id: 'D4', n: 'Гавайская и «Четыре сыра» доступны в маленьком размере', k: [/(мал)/, /(гавайск|четыре сыра|4 сыра)/] },
+  { id: 'D5', n: 'Топпинг «Грибы»: цена 54 вместо 45', k: [/(гриб)/, /(цен|стоимост|сумм|54|45|расч)/] },
+  { id: 'D6', n: 'При загрузке размер «Средняя» вместо «Большая»', k: [/(по умолчанию|при загрузк|при открыти|начальн|изначальн|умолчани)/, /(размер|средн|больш)/] }
+];
+let act = [], found = new Set(), cart = [], S = {};
+function newBuild() { act = BUGS.map(b => b.id).sort(() => Math.random() - .5).slice(0, 4); found = new Set(); cart = []; $('#fc').textContent = 0; $('#fb').style.width = '0'; $('#an').innerHTML = ''; $('#rep').innerHTML = ''; S = { p: 'Маргарита', s: act.includes('D6') ? 'Средняя' : 'Большая', c: 'Толстый', q: 1, t: new Set() }; render(); }
+const on = id => act.includes(id);
+function avail() {
+  const hawai = S.p === 'Гавайская' || S.p === 'Четыре сыра';
+  return { smallOk: on('D4') || !hawai, thinOk: on('D3') || S.s !== 'Маленькая' };
+}
+function price() {
+  const m = { 'Маленькая': 0, 'Средняя': .1, 'Большая': on('D2') ? .1 : .2 }[S.s];
+  const base = PZ[S.p]; const tp = [...S.t].reduce((a, t) => a + (t === 'Грибы' && on('D5') ? 54 : TP[t]), 0);
+  return Math.round((base + base * m + tp) * S.q);
+}
+function render() {
+  const a = avail(); const max = on('D1') ? 11 : 10;
+  if (!a.smallOk && S.s === 'Маленькая') S.s = 'Средняя';
+  if (!a.thinOk && S.c === 'Тонкий') S.c = 'Толстый';
+  if (S.q > max) S.q = max;
+  const radio = (n, vals, key, dis = {}) => vals.map(v => `<label class="${dis[v] ? 'disabled-note' : ''}"><input type="radio" name="${n}" value="${v}" ${S[key] === v ? 'checked' : ''} ${dis[v] ? 'disabled' : ''}> ${v}</label>`).join('');
+  $('#form').innerHTML = `<h3 style="margin:0">${esc(S.p)}</h3>
+  <div class="fld"><b>Пицца</b>${radio('p', Object.keys(PZ), 'p')}</div>
+  <div class="fld"><b>Размер</b>${radio('s', ['Маленькая', 'Средняя', 'Большая'], 's', { 'Маленькая': !a.smallOk })}</div>
+  <div class="fld"><b>Корж</b>${radio('c', ['Тонкий', 'Толстый'], 'c', { 'Тонкий': !a.thinOk })}</div>
+  <div class="fld"><b>Топпинги</b>${Object.keys(TP).map(t => `<label><input type="checkbox" class="tp" value="${t}" ${S.t.has(t) ? 'checked' : ''}> ${t}</label>`).join('')}</div>
+  <div class="fld"><b>Количество</b><input type="number" id="q" min="1" max="${max}" value="${S.q}" style="width:90px"></div>
+  <button class="p add" id="add">Добавить в корзину за ${price()} Р</button>
+  <div class="cart"><b>Корзина</b>${cart.length ? cart.map(c => `<div>${esc(c)}</div>`).join('') : '<div class="mut">пусто</div>'}${cart.length ? '<button id="ord" style="margin-top:6px">Заказать</button>' : ''}</div><div id="msg" class="ok"></div>`;
+  $$('input[name=p]').forEach(i => i.onchange = () => { S.p = i.value; render(); });
+  $$('input[name=s]').forEach(i => i.onchange = () => { S.s = i.value; render(); });
+  $$('input[name=c]').forEach(i => i.onchange = () => { S.c = i.value; render(); });
+  $$('.tp').forEach(i => i.onchange = () => { i.checked ? S.t.add(i.value) : S.t.delete(i.value); render(); });
+  $('#q').oninput = e => { const v = parseInt(e.target.value); if (v >= 1 && v <= max) { S.q = v; $('#add').textContent = `Добавить в корзину за ${price()} Р`; } };
+  $('#add').onclick = () => { cart.push(`${S.p}, ${S.s}, ${S.c}, ${[...S.t].join('+') || 'без топпингов'}, ${S.q} шт. — ${price()} Р`); render(); };
+  if ($('#ord')) $('#ord').onclick = () => { cart = []; render(); $('#msg').textContent = 'Заказ успешно отправлен!'; };
+}
+$('#go').onclick = () => {
+  const t = $('#t').value.trim(), env = $('#env').value.trim(), st = $('#st').value.trim(), ex = $('#ex').value.trim(), ac = $('#ac').value.trim(), sv = $('#sv').value;
+  const steps = st.split('\n').filter(x => x.trim());
+  const checks = [
+    [t.length >= 15 && t.length <= 110, 'Название содержательное: 15–110 символов'],
+    [!/^(не работает|баг|ошибка|глюк)\W*$/i.test(t) && /[а-яa-z]{4,}/i.test(t) && (t.split(/\s+/).length >= 3), 'Название описывает объект и проблему, не просто «не работает»'],
+    [env.length >= 8, 'Указаны предусловия и окружение (браузер, ОС, сборка)'],
+    [steps.length >= 3, 'Не менее 3 шагов воспроизведения'],
+    [ex.length >= 12, 'Ожидаемый результат описан'],
+    [ac.length >= 12, 'Фактический результат описан'],
+    [ex && ac && ex.toLowerCase() !== ac.toLowerCase(), 'Ожидаемый и фактический результаты различаются'],
+    [/\d/.test(ac + st) || /[«"].+[»"]/.test(ac + st), 'Есть конкретные данные (числа или значения полей)'],
+    [!!sv, 'Выбрана серьёзность']
+  ];
+  const ok = checks.filter(c => c[0]).length;
+  const text = (t + ' ' + st + ' ' + ac + ' ' + ex).toLowerCase();
+  const hit = BUGS.find(b => b.k.every(r => r.test(text)));
+  let m;
+  if (!hit) m = '<p class="gz">Отчёт не совпал ни с одним известным дефектом. Проверьте воспроизведение и добавьте конкретные значения (какой размер, какое количество).</p>';
+  else if (!on(hit.id)) m = '<p class="bad">Дефект описан, но в этой сборке он не воспроизводится. Проверьте, что вы описываете именно то, что видите в форме.</p>';
+  else { found.add(hit.id); m = `<p class="ok">Совпало с дефектом сборки ✓ (${found.size} из 4).</p>`; $('#fc').textContent = found.size; $('#fb').style.width = found.size * 25 + '%'; }
+  $('#rep').innerHTML = `<p><b>Качество оформления: ${ok} из ${checks.length}</b></p><ul class="chk">${checks.map(c => `<li class="${c[0] ? 'ok' : 'bad'}">${c[0] ? '✓' : '✗'} ${c[1]}</li>`).join('')}</ul>${m}`;
+};
+$('#rev').onclick = () => $('#an').innerHTML = `<p><b>Дефекты этой сборки:</b></p><ul>${act.map(id => { const b = BUGS.find(x => x.id === id); return `<li>${found.has(id) ? '✅' : '❌'} ${esc(b.n)}</li>`; }).join('')}</ul>`;
+$('#nw').onclick = newBuild;
+newBuild();
+</script></body></html>

@@ -1,6 +1,6 @@
 # Каршеринг — форма бронирования (Спринт 3)
 
-Демо-версия тестовой документации по форме бронирования каршеринга в учебном приложении «Яндекс Маршруты».
+Демо-версия тестовой документации по форме бронирования каршеринга в приложении «Маршруты».
 
 🔗 **Интерактивные материалы:** [реестр багов](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/bugs.html) · [матрица браузеров](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/matrix.html) · [серые зоны](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/gray-zones.html) · [тренажёр «Найди баг»](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/trainer.html)
 
@@ -10,7 +10,7 @@
 - Тариф «Повседневный», ручное тестирование.
 - Не проверялись: расчёт расстояния и времени на кнопке, другие тарифы.
 
-**Окружения:** Firefox 148 / Windows 10 / 1920×1080 · Яндекс Браузер / macOS Ventura / 800×600.
+**Окружения:** Firefox 148 / Windows 10 / 1920×1080 · Y-браузер / macOS Ventura / 800×600.
 
 ## Итоги (пересчитаны из таблиц результатов)
 | Показатель | Значение |

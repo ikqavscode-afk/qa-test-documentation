@@ -1,15 +1,15 @@
 <!DOCTYPE html><html lang="ru"><head><base target="_blank"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Матрица браузеров — спринт 3</title><link rel="stylesheet" href="site.css"></head>
-<body><main><h1>Матрица кроссбраузерности (верстка)</h1><p class="sub">102 проверки верстки выполнены в двух окружениях: Firefox / Windows 10 / 1920×1080 и Яндекс Браузер / macOS / 800×600.</p>
+<body><main><h1>Матрица кроссбраузерности (верстка)</h1><p class="sub">102 проверки верстки выполнены в двух окружениях: Firefox / Windows 10 / 1920×1080 и Y-браузер / macOS / 800×600.</p>
 <div id="nav" class="row"></div><div id="sum"></div>
 <div class="row"><label><input type="checkbox" id="diff"> только расхождения между браузерами</label><label><input type="checkbox" id="fail"> только провалы</label></div><div id="count" class="mut"></div>
-<div class="card" style="overflow:auto"><table><thead><tr><th>ID</th><th>Раздел</th><th>Проверка</th><th>Firefox</th><th>Яндекс</th><th>Баги</th></tr></thead><tbody id="rows"></tbody></table></div></main>
+<div class="card" style="overflow:auto"><table><thead><tr><th>ID</th><th>Раздел</th><th>Проверка</th><th>Firefox</th><th>Y-браузер</th><th>Баги</th></tr></thead><tbody id="rows"></tbody></table></div></main>
 <script src="site.js"></script><script>
 nav();let L=[];
-function draw(){let r=L;if($('#diff').checked)r=r.filter(c=>c.firefox_win!==c.yandex_mac);if($('#fail').checked)r=r.filter(c=>c.firefox_win=='Failed'||c.yandex_mac=='Failed');
+function draw(){let r=L;if($('#diff').checked)r=r.filter(c=>c.firefox_win!==c.ybr_mac);if($('#fail').checked)r=r.filter(c=>c.firefox_win=='Failed'||c.ybr_mac=='Failed');
 $('#count').textContent=`Показано ${r.length} из ${L.length}`;
-$('#rows').innerHTML=r.map(c=>`<tr><td>${c.id}</td><td>${esc(c.section)}</td><td>${esc(c.title)}</td><td class="${c.firefox_win}">${c.firefox_win||'—'}</td><td class="${c.yandex_mac}">${c.yandex_mac||'—'}</td><td>${c.bugs.join(', ')}</td></tr>`).join('')}
+$('#rows').innerHTML=r.map(c=>`<tr><td>${c.id}</td><td>${esc(c.section)}</td><td>${esc(c.title)}</td><td class="${c.firefox_win}">${c.firefox_win||'—'}</td><td class="${c.ybr_mac}">${c.ybr_mac||'—'}</td><td>${c.bugs.join(', ')}</td></tr>`).join('')}
 load('sprint3-checks.json').then(d=>{L=d.filter(c=>c.kind=='layout');
-const f=L.filter(c=>c.firefox_win=='Failed').length,y=L.filter(c=>c.yandex_mac=='Failed').length,both=L.filter(c=>c.firefox_win=='Failed'&&c.yandex_mac=='Failed').length,onlyY=L.filter(c=>c.firefox_win!='Failed'&&c.yandex_mac=='Failed').length,onlyF=L.filter(c=>c.firefox_win=='Failed'&&c.yandex_mac!='Failed').length;
-$('#sum').innerHTML=`<div class="card chips"><span><span class="num">${f}</span><br>провалов в Firefox</span><span><span class="num">${y}</span><br>провалов в Яндекс Браузере</span><span><span class="num">${both}</span><br>в обоих</span><span><span class="num">${onlyY}</span><br>только в Яндексе</span><span><span class="num">${onlyF}</span><br>только в Firefox</span></div>`;
+const f=L.filter(c=>c.firefox_win=='Failed').length,y=L.filter(c=>c.ybr_mac=='Failed').length,both=L.filter(c=>c.firefox_win=='Failed'&&c.ybr_mac=='Failed').length,onlyY=L.filter(c=>c.firefox_win!='Failed'&&c.ybr_mac=='Failed').length,onlyF=L.filter(c=>c.firefox_win=='Failed'&&c.ybr_mac!='Failed').length;
+$('#sum').innerHTML=`<div class="card chips"><span><span class="num">${f}</span><br>провалов в Firefox</span><span><span class="num">${y}</span><br>провалов в Y-браузере</span><span><span class="num">${both}</span><br>в обоих</span><span><span class="num">${onlyY}</span><br>только в Y-браузере</span><span><span class="num">${onlyF}</span><br>только в Firefox</span></div>`;
 ['diff','fail'].forEach(i=>$('#'+i).addEventListener('input',draw));draw()});
 </script></body></html>

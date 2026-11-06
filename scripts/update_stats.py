@@ -49,7 +49,7 @@ pie showData title Дефекты по серьёзности
 # ---- спринт 3
 b3 = json.loads((ROOT / "data/sprint3-bugs.json").read_text())
 c3 = json.loads((ROOT / "data/sprint3-checks.json").read_text())
-res3 = Counter(c[br] for c in c3 for br in ("firefox_win", "yandex_mac") if c[br])
+res3 = Counter(c[br] for c in c3 for br in ("firefox_win", "ybr_mac") if c[br])
 sv3 = Counter(b["severity"] for b in b3)
 tot3 = sum(res3.values())
 block3 = f"""<!-- STATS3:START (генерируется scripts/update_stats.py — не редактировать вручную) -->
@@ -63,7 +63,7 @@ pie showData title Спринт 3: дефекты по серьёзности
 ```
 <!-- STATS3:END -->"""
 
-# ---- спринт 4 (Яндекс Метро)
+# ---- спринт 4 (Метро)
 b4 = json.loads((ROOT / "data/sprint4-bugs.json").read_text())
 c4 = json.loads((ROOT / "data/sprint4-checks.json").read_text())
 st4 = Counter(c["status"] for c in c4)
@@ -72,7 +72,7 @@ block4 = f"""<!-- STATS4:START (генерируется scripts/update_stats.py
 {badge('checks', len(c4), 'blue')} {badge('passed', st4['Passed'], 'brightgreen')} {badge('failed', st4['Failed'], 'red')} {badge('blocked', st4['Blocked'], 'orange')} {badge('skipped', st4['Skipped'], 'lightgrey')} {badge('bugs', len(b4), 'orange')} {badge('critical', sv4['critical'], 'red')} {badge('release', 'Conditional%20Go', 'yellow')}
 
 ```mermaid
-pie showData title Яндекс Метро: результаты проверок
+pie showData title Метро: результаты проверок
     "Passed" : {st4['Passed']}
     "Failed" : {st4['Failed']}
     "Blocked" : {st4['Blocked']}

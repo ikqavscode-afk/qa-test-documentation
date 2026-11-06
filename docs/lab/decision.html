@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="ru"><head><base target="_blank"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Конструктор таблицы принятия решений</title>
+<link rel="stylesheet" href="../sprint3/site.css"><link rel="stylesheet" href="lab.css"></head>
+<body><main>
+<h1>Конструктор таблицы принятия решений</h1>
+<p class="sub">Задайте условия и действия, получите все комбинации, заполните результат для каждой и сожмите таблицу. Для готовых примеров есть эталон.</p>
+<div id="nav" class="row"></div>
+<div class="card">
+<div class="row"><label for="pre"><b>Пример:</b></label><select id="pre"></select></div>
+<div class="grid"><div><label class="f">Условия (до 5), да/нет</label><div id="conds"></div><button id="ac">+ условие</button></div>
+<div><label class="f">Действия (результаты)</label><div id="acts"></div><button id="aa">+ действие</button></div></div>
+<div class="row"><button class="p" id="build">Построить таблицу</button><span class="mut" id="cnt"></span></div></div>
+<div id="out"></div>
+</main><script src="lab.js"></script><script>
+nav();
+const PRE = {
+  pizza: { name: 'Заказ пиццы: доступность комбинации', c: ['Пицца: Гавайская или «Четыре сыра»', 'Размер: маленький', 'Корж: тонкий'], a: ['Комбинация доступна', 'Комбинация недоступна'], note: 'Правила: Гавайская и «Четыре сыра» только в среднем и большом размере; маленькая пицца только с толстым коржем.', ref: r => (r[0] && r[1]) || (r[1] && r[2]) ? 1 : 0 },
+  feedback: { name: 'Форма обратной связи: отправка', c: ['Имя корректно', 'Email корректен', 'Телефон корректен', 'Сообщение корректно'], a: ['Показать «Ваше сообщение успешно отправлено!»', 'Показать ошибку в поле'], note: 'Отправка возможна, только если все поля заполнены корректно.', ref: r => r.every(Boolean) ? 0 : 1 },
+  credit: { name: 'Кредитный калькулятор: расчёт', c: ['Сумма в пределах 10 000…10 000 000', 'Ставка не более 100', 'Срок 1…360 месяцев'], a: ['Показать результаты расчёта', 'Показать сообщение об ошибке'], note: 'Расчёт выполняется, только если все три поля заполнены корректно.', ref: r => r.every(Boolean) ? 0 : 1 },
+  kglogin: { name: 'KGramm: вход в систему', c: ['Логин заполнен', 'Пароль заполнен', 'Данные совпадают с базой'], a: ['Ошибка «Поле с именем является обязательным»', 'Ошибка «Поле с паролем является обязательным»', 'Ошибка «Неправильные логин и/или пароль»', 'Переход на страницу добавления кота'], note: 'Поля проверяются последовательно: сначала логин, затем пароль, затем данные отправляются на проверку.', ref: r => !r[0] ? 0 : !r[1] ? 1 : !r[2] ? 2 : 3 },
+  helper: { name: 'Помощник: регистрация', c: ['Все поля заполнены', 'Данные соответствуют требованиям', 'Имя пользователя и email уникальны'], a: ['Кнопка «Создать аккаунт» неактивна', 'Всплывающее сообщение со всеми ошибками', 'Переход на страницу авторизации'], note: 'Кнопка неактивна, пока хотя бы одно поле пустое. При некорректных данных показывается сообщение со всеми ошибками.', ref: r => !r[0] ? 0 : (!r[1] || !r[2]) ? 1 : 2 },
+  kgpass: { name: 'KGramm: пароль при регистрации', c: ['Длина 8–30 символов', 'Только допустимые символы', 'Символы минимум из двух групп'], a: ['Пароль принят', 'Ошибка «Пароль слишком простой»', 'Пароль отклонён (текст ошибки в требовании не задан)'], note: 'Группы: большие и маленькие латинские буквы, цифры, знаки и спецсимволы. Ошибка «Пароль слишком простой» задана только для правила о двух группах; для длины и символов сообщение в требовании не указано (серая зона).', ref: r => (!r[0] || !r[1]) ? 2 : !r[2] ? 1 : 0 },
+  hppass: { name: 'Помощник: пароль при регистрации', c: ['Длина 7–20 символов', 'Только допустимые символы', 'Есть хотя бы одна буква', 'Есть хотя бы одна цифра'], a: ['Пароль принят', 'Пароль отклонён: ошибка в общем сообщении'], note: 'Допустимы английские буквы, цифры, знаки пунктуации и спецсимволы; нужна минимум одна буква и одна цифра.', ref: r => r.every(Boolean) ? 0 : 1 },
+  custom: { name: 'Своя таблица', c: ['Условие 1', 'Условие 2'], a: ['Действие 1', 'Действие 2'], note: 'Придумайте условия сами. Эталона нет, но сжатие работает.', ref: null }
+};
+const pre = $('#pre'); Object.entries(PRE).forEach(([k, v]) => pre.add(new Option(v.name, k)));
+let C = [], A = [], R = [], cur = PRE.pizza;
+function lists() {
+  $('#conds').innerHTML = C.map((x, i) => `<div class="row"><input data-i="${i}" class="ci" value="${esc(x)}" style="flex:1"><button data-d="${i}" class="dc" title="Убрать">×</button></div>`).join('');
+  $('#acts').innerHTML = A.map((x, i) => `<div class="row"><input data-i="${i}" class="ai" value="${esc(x)}" style="flex:1"><button data-d="${i}" class="da" title="Убрать">×</button></div>`).join('');
+  $$('.ci').forEach(e => e.oninput = () => C[e.dataset.i] = e.value); $$('.ai').forEach(e => e.oninput = () => A[e.dataset.i] = e.value);
+  $$('.dc').forEach(b => b.onclick = () => { if (C.length > 1) { C.splice(b.dataset.d, 1); lists(); } });
+  $$('.da').forEach(b => b.onclick = () => { if (A.length > 2) { A.splice(b.dataset.d, 1); lists(); } });
+  $('#cnt').textContent = `Комбинаций: ${2 ** C.length}`;
+}
+function load(k) { cur = PRE[k]; C = [...cur.c]; A = [...cur.a]; lists(); $('#out').innerHTML = cur.note ? `<div class="note">${esc(cur.note)}</div>` : ''; }
+$('#ac').onclick = () => { if (C.length < 5) { C.push('Условие ' + (C.length + 1)); lists(); } };
+$('#aa').onclick = () => { if (A.length < 4) { A.push('Действие ' + (A.length + 1)); lists(); } };
+pre.onchange = () => load(pre.value);
+function combos(n) { const o = []; for (let m = 0; m < 2 ** n; m++) o.push(Array.from({ length: n }, (_, j) => !!((m >> (n - 1 - j)) & 1) === false)); return o; } // true = «Да», первая комбинация: все «Да»
+function table(rules, acts, editable, res) {
+  const head = `<tr><th>Правило</th>${rules.map((_, i) => `<th class="c">${i + 1}</th>`).join('')}</tr>`;
+  const rows = C.map((c, j) => `<tr><th>${esc(c)}</th>${rules.map(r => `<td class="c ${r[j] === true ? 'y' : r[j] === false ? 'n' : ''}">${r[j] === true ? 'Да' : r[j] === false ? 'Нет' : '—'}</td>`).join('')}</tr>`).join('');
+  const act = `<tr><th>Действие</th>${rules.map((_, i) => `<td class="c">${editable ? `<select data-r="${i}" class="as"><option value="">?</option>${A.map((a, k) => `<option value="${k}">${esc(a)}</option>`).join('')}</select>` : esc(A[acts[i]])}</td>`).join('')}</tr>`;
+  return `<div style="overflow:auto"><table class="dt">${head}${rows}${act}</table></div>`;
+}
+$('#build').onclick = () => {
+  R = combos(C.length);
+  $('#out').innerHTML = `<div class="card"><h3 style="margin:0 0 6px">Полная таблица: ${R.length} правил</h3><p class="mut">Выберите действие для каждого правила.</p>${table(R, null, true)}
+  <div class="row">${cur.ref ? '<button class="p" id="chk">Проверить по эталону</button>' : ''}<button class="p" id="cmp">Сжать таблицу</button><button id="md">Копировать как Markdown</button></div><div id="res"></div></div>`;
+  $('#cmp').onclick = compress; $('#md').onclick = e => copy(toMd(R, $$('.as').map(s => s.value)), e.target);
+  if (cur.ref) $('#chk').onclick = () => {
+    let ok = 0, miss = 0; $$('.as').forEach((s, i) => { const e = cur.ref(R[i]); s.parentNode.style.background = ''; if (s.value === '') { miss++; return; } if (+s.value === e) { ok++; s.parentNode.style.background = '#2f9e7a44'; } else s.parentNode.style.background = '#d6454455'; });
+    $('#res').innerHTML = `<h3>Верно ${ok} из ${R.length}${miss ? `, не заполнено: ${miss}` : ''}</h3>` + (ok === R.length ? '<p class="ok">Таблица совпадает с эталоном ✓</p>' : '<p class="bad">Красным отмечены неверные правила. Перечитайте условия: <i>' + esc(cur.note) + '</i></p>');
+  };
+};
+function compress() {
+  const sel = $$('.as').map(s => s.value);
+  if (sel.includes('')) { $('#res').innerHTML = '<p class="bad">Заполните действие для каждого правила, затем сжимайте.</p>'; return; }
+  let groups = {}; R.forEach((r, i) => (groups[sel[i]] ||= []).push(r.slice()));
+  let out = [];
+  Object.entries(groups).forEach(([a, rs]) => {
+    let cur = rs, changed = true;
+    while (changed) {
+      changed = false; const used = new Set(), nxt = [], seen = new Set();
+      for (let i = 0; i < cur.length; i++) for (let j = i + 1; j < cur.length; j++) {
+        const d = cur[i].map((v, k) => v === cur[j][k] ? -1 : k).filter(k => k >= 0);
+        if (d.length === 1 && cur[i][d[0]] !== null && cur[j][d[0]] !== null) { const m = cur[i].slice(); m[d[0]] = null; const key = m.join(','); used.add(i); used.add(j); if (!seen.has(key)) { seen.add(key); nxt.push(m); } changed = true; }
+      }
+      cur.forEach((r, i) => { if (!used.has(i)) { const key = r.join(','); if (!seen.has(key)) { seen.add(key); nxt.push(r); } } });
+      cur = nxt;
+    }
+    cur.forEach(r => out.push({ r, a: +a }));
+  });
+  out.sort((x, y) => x.a - y.a);
+  $('#res').innerHTML = `<h3>Сжатая таблица: ${out.length} правил вместо ${R.length}</h3>${table(out.map(o => o.r), out.map(o => o.a), false)}
+  <p class="mut">Знак «—» означает, что значение условия не влияет на результат. Сжатие объединяет правила с одинаковым действием, которые различаются в одном условии.</p><button id="md2">Копировать сжатую таблицу</button>`;
+  $('#md2').onclick = e => copy(toMd(out.map(o => o.r), out.map(o => o.a)), e.target);
+}
+function toMd(rules, acts) {
+  const h = `| Условие | ${rules.map((_, i) => 'П' + (i + 1)).join(' | ')} |\n|---|${rules.map(() => '---').join('|')}|\n`;
+  const rows = C.map((c, j) => `| ${c} | ${rules.map(r => r[j] === true ? 'Да' : r[j] === false ? 'Нет' : '—').join(' | ')} |`).join('\n');
+  return h + rows + `\n| **Действие** | ${acts.map(a => a === '' ? '?' : A[a]).join(' | ')} |\n`;
+}
+load('pizza');
+</script></body></html>

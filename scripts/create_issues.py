@@ -13,9 +13,9 @@ import json, os, subprocess, sys, pathlib, re
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 REPO = os.environ.get("GITHUB_REPOSITORY", "ikqavscode-afk/qa-test-documentation")
 RAW = {
-    "2": f"https://raw.githubusercontent.com/{REPO}/main/sprint-2-YaM/bug-reports/screenshots/",
+    "2": f"https://raw.githubusercontent.com/{REPO}/main/sprint-2-Routes/bug-reports/screenshots/",
     "3": f"https://raw.githubusercontent.com/{REPO}/main/spritn-3-CarSh/bug-reports/screenshots/",
-    "4": f"https://raw.githubusercontent.com/{REPO}/main/spritn-4-YaMetro/bug-reports/screenshots/",
+    "4": f"https://raw.githubusercontent.com/{REPO}/main/spritn-4-Metro/bug-reports/screenshots/",
 }
 DATA = {"2": "data/bugs.json", "3": "data/sprint3-bugs.json", "4": "data/sprint4-bugs.json"}
 PRIO = {"critical": "high", "major": "medium", "minor": "low"}

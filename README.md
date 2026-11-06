@@ -19,20 +19,30 @@
 
 | Проект | Объект тестирования | Направленность | Чек-лист |
 |---|---|---|---|
-| Спринт 1 · Mesto | веб-приложение: редактирование профиля | функциональное и регрессионное, валидация, баг-репорты | [checklist.md](sprint-1-mesto/checklist.md) |
-| Спринт 2 · Яндекс Маршруты | форма маршрута: время, адреса, расчёт | тест-дизайн, классы эквивалентности, границы | [checklist.md](sprint-2-YaM/checklist.md) |
+| Спринт 1 · Places | веб-приложение: редактирование профиля | функциональное и регрессионное, валидация, баг-репорты | [checklist.md](sprint-1-places/checklist.md) |
+| Спринт 2 · Маршруты | форма маршрута: время, адреса, расчёт | тест-дизайн, классы эквивалентности, границы | [checklist.md](sprint-2-Routes/checklist.md) |
 | Спринт 3 · Каршеринг | форма бронирования | вёрстка, кроссбраузерность, логика окон | [checklist.md](spritn-3-CarSh/checklist.md) |
-| Спринт 4 · Яндекс Метро | мобильное приложение Android | регрессия, мобильные факторы, решение о релизе | [checklist.md](spritn-4-YaMetro/checklist.md) |
+| Спринт 4 · Метро | мобильное приложение Android | регрессия, мобильные факторы, решение о релизе | [checklist.md](spritn-4-Metro/checklist.md) |
 | Спринт 5 · Прилавок | бэкенд: REST и XML API | API-тестирование, Postman, HTTP-статусы, баг-репорты | [Sprint_5](https://github.com/ikqavscode-afk/Sprint_5) (отдельный репозиторий) |
+
+## Тренажёры
+
+Раздел для отработки навыков в браузере ([открыть](https://ikqavscode-afk.github.io/qa-test-documentation/lab/index.html)):
+
+| Тренажёр | Что отрабатывает |
+|---|---|
+| [КЭ и граничные значения](https://ikqavscode-afk.github.io/qa-test-documentation/lab/ep.html) | классификация значений, подбор границ, серые зоны (12 полей из форм) |
+| [Таблица принятия решений](https://ikqavscode-afk.github.io/qa-test-documentation/lab/decision.html) | построение всех комбинаций, проверка по эталону, сжатие, экспорт в Markdown; примеры: пицца, форма, кредит, вход и пароли KGramm, регистрация и пароль Помощника |
+| [Найди баг и оформи отчёт](https://ikqavscode-afk.github.io/qa-test-documentation/lab/findbug.html) | поиск дефектов в форме заказа пиццы, проверка полноты баг-репорта |
 
 ## Проекты
 
 | Проект | Описание |
 |---|---|
-| [sprint-1-mesto](sprint-1-mesto/) | Спринт 1: Mesto — регрессионные кейсы, баг-репорты и ретест веб-приложения |
-| [sprint-2-YaM](sprint-2-YaM/) | Спринт 2: «Яндекс Маршруты» — валидация полей и расчёт стоимости/времени поездки |
+| [sprint-1-places](sprint-1-places/) | Спринт 1: Places — регрессионные кейсы, баг-репорты и ретест веб-приложения |
+| [sprint-2-Routes](sprint-2-Routes/) | Спринт 2: «Маршруты» — валидация полей и расчёт стоимости/времени поездки |
 | [spritn-3-CarSh](spritn-3-CarSh/) | Спринт 3: форма бронирования каршеринга — верстка и логика, 43 бага, серые зоны, отчёт о готовности |
-| [spritn-4-YaMetro](spritn-4-YaMetro/) | Итоговый проект (спринт 4): «Яндекс Метро» для Android — регрессия после рефакторинга и решение о релизе |
+| [spritn-4-Metro](spritn-4-Metro/) | Итоговый проект (спринт 4): «Метро» для Android — регрессия после рефакторинга и решение о релизе |
 | [Sprint_5](https://github.com/ikqavscode-afk/Sprint_5) | Спринт 5: «Прилавок» — тестирование API: 102 проверки, 45 дефектов, коллекция Postman, интерактивная консоль ([сайт](https://ikqavscode-afk.github.io/Sprint_5/)) |
 
 ## Статистика (автообновляется)
@@ -78,13 +88,13 @@ pie showData title Спринт 3: дефекты по серьёзности
 
 🔗 [Реестр багов](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/bugs.html) · [Матрица браузеров](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/matrix.html) · [Серые зоны](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/gray-zones.html) · [Тренажёр «Найди баг»](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/trainer.html)
 
-### Яндекс Метро (Android) — итоговый проект
+### Метро (Android) — итоговый проект
 
 <!-- STATS4:START (генерируется scripts/update_stats.py — не редактировать вручную) -->
 ![checks](https://img.shields.io/badge/checks-57-blue) ![passed](https://img.shields.io/badge/passed-43-brightgreen) ![failed](https://img.shields.io/badge/failed-9-red) ![blocked](https://img.shields.io/badge/blocked-2-orange) ![skipped](https://img.shields.io/badge/skipped-3-lightgrey) ![bugs](https://img.shields.io/badge/bugs-13-orange) ![critical](https://img.shields.io/badge/critical-3-red) ![release](https://img.shields.io/badge/release-Conditional%20Go-yellow)
 
 ```mermaid
-pie showData title Яндекс Метро: результаты проверок
+pie showData title Метро: результаты проверок
     "Passed" : 43
     "Failed" : 9
     "Blocked" : 2
@@ -98,10 +108,10 @@ pie showData title Яндекс Метро: результаты проверо�
 
 | Папка | Назначение |
 |---|---|
-| [sprint-1-mesto](sprint-1-mesto/) | спринт 1: кейсы, баги и ретест Mesto |
-| [sprint-2-YaM](sprint-2-YaM/) | спринт 2: тест-дизайн, тест-кейсы, баг-репорты |
+| [sprint-1-places](sprint-1-places/) | спринт 1: кейсы, баги и ретест Places |
+| [sprint-2-Routes](sprint-2-Routes/) | спринт 2: тест-дизайн, тест-кейсы, баг-репорты |
 | [spritn-3-CarSh](spritn-3-CarSh/) | спринт 3: тест-анализ, серые зоны, чек-листы, баги, отчёты, ретест |
-| [spritn-4-YaMetro](spritn-4-YaMetro/) | итоговый проект: мобильная регрессия, решение о релизе, трассировка |
+| [spritn-4-Metro](spritn-4-Metro/) | итоговый проект: мобильная регрессия, решение о релизе, трассировка |
 | [data](data/) | исходные данные (JSON): результаты тестов и баги — из них строится статистика и Issues |
 | [templates](templates/) | шаблоны тест-кейса, баг-репорта и чек-листа |
 | [docs](docs/) | методика (конспекты) и сайт GitHub Pages с интерактивным чек-листом |
@@ -119,7 +129,7 @@ pie showData title Яндекс Метро: результаты проверо�
 - [x] Функциональное тестирование валидации полей и расчёта (63 кейса)
 - [x] Оформление дефектов (18 баг-репортов)
 - [x] Шаблоны, Issues, автостатистика, интерактивный чек-лист
-- [x] Кроссбраузерная проверка верстки (Firefox и Яндекс Браузер, спринт 3)
+- [x] Кроссбраузерная проверка верстки (Firefox и Y-браузер, спринт 3)
 - [ ] Кроссбраузерная проверка остальных браузеров (Chrome, Safari, Edge)
 - [x] Мобильное тестирование: Android, ориентация, жесты, сеть (итоговый проект)
 - [ ] Проверка на реальных устройствах и iOS

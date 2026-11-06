@@ -5,7 +5,7 @@ import pathlib, shutil
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TARGETS = [
     ("sprint3-*.json", "docs/sprint3", "spritn-3-CarSh"),
-    ("sprint4-*.json", "docs/metro", "spritn-4-YaMetro"),
+    ("sprint4-*.json", "docs/metro", "spritn-4-Metro"),
 ]
 for pattern, site, project in TARGETS:
     site = ROOT / site

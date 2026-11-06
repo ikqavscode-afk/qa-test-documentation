@@ -3,7 +3,7 @@ name: Deploy checklist to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ["docs/**", "data/**", "spritn-3-CarSh/bug-reports/**", "spritn-4-YaMetro/bug-reports/**", "scripts/sync_site_data.py"]
+    paths: ["docs/**", "data/**", "spritn-3-CarSh/bug-reports/**", "spritn-4-Metro/bug-reports/**", "scripts/sync_site_data.py"]
   workflow_dispatch:
 
 permissions:
