@@ -1,0 +1,26 @@
+name: ✅ Тест-кейс
+description: Предложить или описать тест-кейс
+title: "[TC] Проверка …"
+labels: ["test-case"]
+body:
+  - type: input
+    id: id
+    attributes: {label: ID, placeholder: "T64"}
+    validations: {required: true}
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Тип сценария
+      options: [Позитивный, Негативный]
+    validations: {required: true}
+  - type: textarea
+    id: pre
+    attributes: {label: Предусловия}
+  - type: textarea
+    id: steps
+    attributes: {label: Шаги}
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes: {label: Ожидаемый результат}
+    validations: {required: true}

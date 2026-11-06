@@ -1,0 +1,14 @@
+# name | color | description
+- {name: "severity: critical", color: "B60205", description: "Важная часть системы не работает"}
+- {name: "severity: major", color: "D93F0B", description: "Система работает не так, как задумано"}
+- {name: "severity: minor", color: "FBCA04", description: "Работать неудобно, но функционал цел"}
+- {name: "priority: high", color: "B60205", description: "Чинить срочно"}
+- {name: "priority: medium", color: "FBCA04", description: "Чинить в плановом порядке"}
+- {name: "priority: low", color: "0E8A16", description: "Можно исправить позже"}
+- {name: "area: hours", color: "1D76DB", description: "Поле «Часы»"}
+- {name: "area: minutes", color: "1D76DB", description: "Поле «Минуты»"}
+- {name: "area: address-from", color: "5319E7", description: "Поле «Откуда»"}
+- {name: "area: address-to", color: "5319E7", description: "Поле «Куда»"}
+- {name: "area: calculation", color: "006B75", description: "Расчёт времени и стоимости"}
+- {name: "status: open", color: "EDEDED", description: "Баг открыт"}
+- {name: "test-case", color: "C2E0C6", description: "Тест-кейс"}

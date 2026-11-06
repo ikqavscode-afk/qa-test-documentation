@@ -1,0 +1,42 @@
+name: 🐞 Баг-репорт
+description: Оформить дефект по шаблону тестировщика
+title: "[Область] Что не так"
+labels: ["bug", "status: open"]
+body:
+  - type: input
+    id: id
+    attributes: {label: ID баг-репорта, placeholder: "ЯМ-T2-Б1"}
+    validations: {required: true}
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Серьёзность (severity)
+      options: [Blocker, Critical, Major, Minor, Trivial]
+    validations: {required: true}
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Приоритет
+      options: [High, Medium, Low]
+    validations: {required: true}
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги воспроизведения
+      placeholder: "1. …\n2. …"
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes: {label: Ожидаемый результат}
+    validations: {required: true}
+  - type: textarea
+    id: actual
+    attributes: {label: Фактический результат}
+    validations: {required: true}
+  - type: input
+    id: env
+    attributes: {label: Окружение, placeholder: "Chrome 145, Windows 10"}
+    validations: {required: true}
+  - type: textarea
+    id: attachments
+    attributes: {label: Скриншоты / логи, description: "Перетащите файл в поле. Без личных данных!"}
