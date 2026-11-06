@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Чек-листы проектов</title>
+<html lang="ru"><head><base target="_blank"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Чек-листы проектов</title>
 <link rel="stylesheet" href="sprint3/site.css">
 <style>.proj{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.proj button.on{border-color:var(--ac);box-shadow:inset 0 -3px 0 var(--ac)}
 .pass{display:grid;grid-template-columns:140px 1fr;gap:6px 14px}.pass b{color:var(--mut);font-weight:600}
@@ -18,8 +18,7 @@
 </main>
 <script src="sprint3/site.js"></script>
 <script>
-function goBack(fb){if(history.length>1&&document.referrer&&new URL(document.referrer).origin===location.origin)history.back();else location.href=fb}
-$('#nav').innerHTML='<button class="back" onclick="goBack(\'index.html\')">← Назад</button>'+[['index.html','Чек-лист тестировщика'],['sprint3/index.html','Спринт 3: каршеринг'],['metro/index.html','Итоговый: Яндекс Метро']].map(([h,t])=>`<a href="${h}">${t}</a>`).join('');
+$('#nav').innerHTML='<a href="https://github.com/ikqavscode-afk/qa-test-documentation">🏠 Репозиторий</a>'+[['index.html','Чек-лист тестировщика'],['sprint3/index.html','Спринт 3: каршеринг'],['metro/index.html','Итоговый: Яндекс Метро']].map(([h,t])=>`<a href="${h}">${t}</a>`).join('');
 const KEY='qa-projects-checklist-v1';let S=JSON.parse(localStorage.getItem(KEY)||'{}'),P=[],cur=null,flt='';
 const IC={Passed:'✅',Closed:'✅',Failed:'❌',Reopened:'🔁',Blocked:'⛔',Skipped:'⏭','':'—'};
 const li=a=>`<ul class="l">${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;

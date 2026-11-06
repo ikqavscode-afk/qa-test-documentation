@@ -13,4 +13,3 @@ table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{border:1px soli
 .Passed{background:#2f9e7a33}.Failed{background:#d6454533}.Skipped{background:#98a0ad33}.Blocked{background:#e08a1e33}
 .chips span{display:inline-block;margin-right:12px}.num{font-size:1.5rem;font-weight:700}
 .opt{display:block;width:100%;text-align:left;margin:6px 0}.opt.ok{border-color:var(--grn);background:#2f9e7a33}.opt.no{border-color:var(--red);background:#d6454533}
-.back{background:transparent;border-color:var(--bd)}.back:hover{border-color:var(--ac)}
