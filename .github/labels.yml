@@ -12,3 +12,12 @@
 - {name: "area: calculation", color: "006B75", description: "Расчёт времени и стоимости"}
 - {name: "status: open", color: "EDEDED", description: "Баг открыт"}
 - {name: "test-case", color: "C2E0C6", description: "Тест-кейс"}
+- {name: "area: form-layout", color: "5319E7", description: "Верстка формы бронирования"}
+- {name: "area: license", color: "5319E7", description: "Добавление прав"}
+- {name: "area: booking-logic", color: "5319E7", description: "Логика кнопки бронирования"}
+- {name: "area: booking-window", color: "5319E7", description: "Окно «Машина забронирована»"}
+- {name: "area: map", color: "5319E7", description: "Карта и иконки машин"}
+- {name: "area: payment", color: "5319E7", description: "Способ оплаты"}
+- {name: "area: card", color: "5319E7", description: "Добавление карты"}
+- {name: "sprint-2", color: "BFD4F2", description: "Яндекс Маршруты: валидация и расчёт"}
+- {name: "sprint-3", color: "BFD4F2", description: "Каршеринг: форма бронирования"}

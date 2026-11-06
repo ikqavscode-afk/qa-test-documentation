@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Тренажёр «Найди баг» — спринт 3</title><link rel="stylesheet" href="site.css"></head>
+<body><main><h1>Тренажёр «Найди баг»</h1><p class="sub">Посмотрите на скриншот и выберите, какой дефект на нём найден. Красной отметкой выделено проблемное место.</p>
+<div id="nav" class="row"></div><div id="box" class="card"></div></main>
+<script src="site.js"></script><script>
+nav();const IDS=['Б1','Б2','Б5','Б13','Б15','Б19','Б23','Б24','Б29','Б28'];
+let Q=[],i=0,score=0,B;
+function rng(seed){return()=>{seed=(seed*9301+49297)%233280;return seed/233280}}
+function shuffle(a,r){return a.map(x=>[r(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1])}
+function show(){const box=$('#box');if(i>=Q.length){box.innerHTML=`<h2>Результат: ${score} из ${Q.length}</h2><p>${score>=Q.length*.8?'Отлично — у вас намётан глаз на баги!':'Хорошо. Посмотрите разбор в реестре багов и попробуйте ещё раз.'}</p><button class="p" onclick="start()">Пройти заново</button>`;return}
+const q=Q[i];box.innerHTML=`<p class="mut">Вопрос ${i+1} из ${Q.length}</p><img src="media/${q.b.screenshot}" style="max-width:100%;border:1px solid var(--bd);border-radius:8px"><p><b>Какой дефект на скриншоте?</b></p>`+q.opts.map((o,k)=>`<button class="opt" data-k="${k}">${esc(o.title)}</button>`).join('')+'<div id="fb"></div>';
+box.querySelectorAll('.opt').forEach(btn=>btn.onclick=()=>{const o=q.opts[btn.dataset.k];const ok=o.id==q.b.id;if(ok)score++;
+box.querySelectorAll('.opt').forEach((x,k)=>{x.disabled=true;if(q.opts[k].id==q.b.id)x.classList.add('ok');else if(x===btn)x.classList.add('no')});
+$('#fb').innerHTML=`<p>${ok?'✅ Верно!':'❌ Не совсем.'} <b>${q.b.id}</b> (${q.b.severity}). <b>Ожидалось:</b> ${esc(q.b.expected)}</p><button class="p" id="nx">Дальше →</button>`;$('#nx').onclick=()=>{i++;show()}})}
+function start(){i=0;score=0;const r=rng(Date.now()%1000+7);const pool=B.filter(b=>IDS.includes(b.id));
+Q=shuffle(pool,r).slice(0,8).map(b=>({b,opts:shuffle([b,...shuffle(B.filter(x=>x.id!=b.id&&x.area!=b.area||x.severity!=b.severity&&x.id!=b.id),r).slice(0,3)],r)}));show()}
+load('sprint3-bugs.json').then(d=>{B=d;start()});
+</script></body></html>

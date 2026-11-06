@@ -36,6 +36,8 @@ small{color:var(--mut)}code{background:var(--bd);padding:1px 6px;border-radius:4
     <button class="on" data-t="list">Чек-лист</button>
     <button data-t="oracle">Оракул FEW HICCUPS</button>
     <button data-t="sev">Серьёзность бага</button>
+    <button data-t="lay">Верстка: генератор</button>
+    <button data-t="ret">Ретест</button>
     <span style="flex:1"></span><small id="cnt"></small>
     <button id="copy" class="p">Скопировать как Markdown</button>
     <button id="reset">Сбросить</button>
@@ -69,6 +71,20 @@ small{color:var(--mut)}code{background:var(--bd);padding:1px 6px;border-radius:4
 <label><input type="radio" name="s" value="2"><span>Функция работает не так, как задумано, но результат корректен (нет автоподстановки «0»)</span></label>
 <label><input type="radio" name="s" value="3"><span>Неудобство или косметика (текст ошибки не по требованиям)</span></label>
 <p id="sevout"><small>Выберите вариант выше.</small></p>
+</section></div>
+<div id="lay" class="hide"><section>
+<h2>Генератор чек-листа верстки</h2>
+<p><small>Выберите тип элемента и введите его название — получите список проверок внешнего вида.</small></p>
+<div class="row"><select id="etype"></select><input id="ename" placeholder="Название, например: Кнопка «Забронировать»" style="flex:1;min-width:220px"><button class="p" id="gen">Сгенерировать</button></div>
+<div id="genout"></div>
+<div class="row"><button id="gencopy" class="hide">Скопировать как Markdown</button></div>
+<p><small>Дальше: <a href="sprint3/">материалы спринта 3 — реестр багов, матрица браузеров, серые зоны и тренажёр</a>.</small></p>
+</section></div>
+
+<div id="ret" class="hide"><section>
+<h2>Ретест после исправлений</h2>
+<div id="retlist"></div>
+<p><small>Подробнее — в разделе «regression» проекта спринта 3.</small></p>
 </section></div>
 <div class="toast" id="toast">Скопировано</div>
 </main>
@@ -116,9 +132,25 @@ $("#list").addEventListener("change",e=>{st[e.target.id]=e.target.checked;localS
 $("#reset").onclick=()=>{st={};localStorage.removeItem(KEY);paint()};
 $("#copy").onclick=()=>{const md=[...document.querySelectorAll("#list section")].map(s=>"### "+s.querySelector("h2").textContent+"\n"+[...s.querySelectorAll("label")].map(l=>`- [${l.querySelector("input").checked?"x":" "}] ${l.textContent.trim()}`).join("\n")).join("\n\n");
 navigator.clipboard.writeText(md).then(()=>{const t=$("#toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1500)})};
-document.querySelectorAll(".tabs [data-t]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs [data-t]").forEach(x=>x.classList.toggle("on",x===b));["list","oracle","sev"].forEach(id=>$("#"+id).classList.toggle("hide",id!==b.dataset.t))});
+document.querySelectorAll(".tabs [data-t]").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs [data-t]").forEach(x=>x.classList.toggle("on",x===b));["list","oracle","sev","lay","ret"].forEach(id=>$("#"+id).classList.toggle("hide",id!==b.dataset.t))});
 const SEV=[["Blocker","High"],["Critical","High"],["Major","Medium"],["Minor / Trivial","Low"]];
 document.querySelectorAll("[name=s]").forEach(r=>r.onchange=()=>{const[a,b]=SEV[r.value];$("#sevout").innerHTML=`Серьёзность: <b>${a}</b> · Приоритет: <b>${b}</b>`});
+
+const LAY={"Текст":["положение на странице","отступы от других объектов","выравнивание (лево, право, центр)","шрифт и стиль","размер шрифта","цвет текста"],
+"Картинка":["положение","размер","отображение при разных разрешениях","формат (GIF, JPEG, PNG, WebP)","отступы от других элементов"],
+"Поле":["положение","размер (высота, ширина)","форма и скругление углов","цвет фона","границы и их цвет","подсказка внутри (цвет, шрифт, размер)","внутренние отступы","отступы от других элементов"],
+"Кнопка":["расположение","форма и скругление углов","цвет фона","границы (толщина, цвет)","тень","надпись (текст, шрифт, размер, цвет)","выравнивание надписи","внутренние отступы","отступы от других элементов"],
+"Форма":["форма и размер","структура (поля)","заголовок","границы и их цвет","подсказки внутри","названия элементов","выравнивание","внутренние и внешние отступы"],
+"Расчёт":["результат считается по формуле","отображаемые данные соответствуют расчёту"]};
+$("#etype").innerHTML=Object.keys(LAY).map(k=>`<option>${k}</option>`).join("");
+let gen=[];
+$("#gen").onclick=()=>{const t=$("#etype").value,n=$("#ename").value.trim()||t;gen=LAY[t].map(x=>`${t} «${n.replace(/^[^«]*«|»$/g,"")}» — ${x}`);
+$("#genout").innerHTML=gen.map((x,i)=>`<label><input type="checkbox"><span>${x}</span></label>`).join("");$("#gencopy").classList.remove("hide")};
+$("#gencopy").onclick=()=>{navigator.clipboard.writeText(gen.map(x=>"- [ ] "+x).join("\n")).then(()=>{const t=$("#toast");t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1500)})};
+const RET=["Получена новая сборка, зафиксирована версия","Исправленные баги сверены с реестром","Ретест багов: сначала Critical, затем Major, Minor","Регрессия: успешное бронирование от адресов до окна «Машина забронирована»","Регрессия: окна прав, способа оплаты и добавления карты","Регрессия: кнопка «Забронировать» во всех состояниях","Проверено в двух окружениях (браузер и разрешение)","Пропущенные и заблокированные проверки выполнены","Статусы обновлены, отчёт о готовности пересобран","Новые дефекты оформлены отдельными баг-репортами"];
+let rs=JSON.parse(localStorage.getItem("qa-retest-v1")||"{}");
+$("#retlist").innerHTML=RET.map((t,i)=>`<label><input type="checkbox" data-r="${i}" ${rs[i]?"checked":""}><span>${t}</span></label>`).join("");
+$("#retlist").addEventListener("change",e=>{rs[e.target.dataset.r]=e.target.checked;localStorage.setItem("qa-retest-v1",JSON.stringify(rs))});
 paint();
 </script>
 </body>

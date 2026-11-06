@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Спринт 3 — каршеринг: тестовая документация</title><link rel="stylesheet" href="site.css"></head>
+<body><main><h1>🚗 Спринт 3 — форма бронирования каршеринга</h1><p class="sub">Интерактивные материалы по тестированию верстки и логики формы бронирования («Яндекс Маршруты», учебный проект).</p>
+<div id="nav" class="row"></div>
+<div class="card chips" id="stats">Загрузка…</div>
+<div class="card"><b>Что здесь есть</b><ul>
+<li><a href="bugs.html">Реестр багов</a> — 43 дефекта с фильтрами, скриншотами и GIF.</li>
+<li><a href="matrix.html">Матрица браузеров</a> — какие проверки верстки падают в Firefox и Яндекс Браузере.</li>
+<li><a href="gray-zones.html">Серые зоны</a> — вопросы к требованиям и принятые допущения.</li>
+<li><a href="trainer.html">Тренажёр «Найди баг»</a> — угадайте дефект по скриншоту.</li>
+<li><a href="../index.html">Чек-лист тестировщика</a> — генератор чек-листа верстки и ретест.</li></ul></div>
+</main><script src="site.js"></script><script>
+nav();Promise.all([load('sprint3-bugs.json'),load('sprint3-checks.json')]).then(([b,c])=>{
+const cnt=(a,f)=>a.filter(f).length;const res=c.flatMap(x=>[x.firefox_win,x.yandex_mac]).filter(Boolean);
+$('#stats').innerHTML=`<span><span class="num">${b.length}</span><br>багов</span><span><span class="num">${cnt(b,x=>x.severity=='critical')}</span><br>критических</span><span><span class="num">${c.length}</span><br>проверок</span><span><span class="num">${res.length}</span><br>результатов</span><span><span class="num">${res.filter(x=>x=='Failed').length}</span><br>провалено</span>`});
+</script></body></html>

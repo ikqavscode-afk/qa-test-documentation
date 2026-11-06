@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Серые зоны — спринт 3</title><link rel="stylesheet" href="site.css"></head>
+<body><main><h1>Серые зоны требований</h1><p class="sub">Неочевидные и неполные места в требованиях: что неясно, какой вопрос задать аналитику и какое допущение принято при тестировании.</p>
+<div id="nav" class="row"></div><div class="row"><select id="risk"><option value="">Любой риск</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select><button class="p" id="copy">Скопировать все вопросы</button></div><div id="list"></div></main>
+<script src="site.js"></script><script>
+nav();let G=[];
+function draw(){const r=G.filter(g=>!$('#risk').value||g.risk==$('#risk').value);
+$('#list').innerHTML=r.map(g=>`<div class="card"><span class="tag ${g.risk}">${g.risk}</span> <b>${g.id}</b> · ${esc(g.topic)}<p><b>Что неясно:</b> ${esc(g.unclear)}</p><p><b>Вопрос аналитику:</b> ${esc(g.question)}</p><p><b>Допущение при тестировании:</b> ${esc(g.assumption)}</p><p class="mut">Связанные баги: ${g.bugs.join(', ')||'—'}</p></div>`).join('')}
+load('sprint3-gray-zones.json').then(d=>{G=d;$('#risk').addEventListener('input',draw);draw();
+$('#copy').onclick=()=>{const t=G.map((g,i)=>`${i+1}. [${g.topic}] ${g.question}`).join('\n');navigator.clipboard.writeText(t);$('#copy').textContent='Скопировано ✓'}});
+</script></body></html>

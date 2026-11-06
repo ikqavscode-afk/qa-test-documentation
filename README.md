@@ -4,11 +4,19 @@
 
 🔗 **Онлайн-чек-лист тестировщика:** <https://ikqavscode-afk.github.io/qa-test-documentation/>
 
+## Главная ценность
+
+> **Сквозная прослеживаемость от неясного требования до решения о релизе.**
+> Каждое «серое» место требований превращено в вопрос и допущение, затем в класс эквивалентности и проверку, а упавшая проверка — в воспроизводимый баг с метрикой и вердиктом No-Go. Ни одно утверждение в отчёте не висит в воздухе: его можно проследить до конкретного бага и шагов воспроизведения.
+
+Что это показывает работодателю: умение мыслить как инженер по качеству, а не просто «прощёлкивать» интерфейс.
+
 ## Проекты
 
 | Проект | Описание |
 |---|---|
 | [sprint-2-YaM](sprint-2-YaM/) | Спринт 2: «Яндекс Маршруты» — валидация полей и расчёт стоимости/времени поездки |
+| [spritn-3-CarSh](spritn-3-CarSh/) | Спринт 3: форма бронирования каршеринга — верстка и логика, 43 бага, серые зоны, отчёт о готовности |
 
 ## Статистика (автообновляется)
 
@@ -38,11 +46,27 @@ pie showData title Дефекты по серьёзности
 ```
 <!-- STATS:END -->
 
+### Спринт 3 — каршеринг
+
+<!-- STATS3:START (генерируется scripts/update_stats.py — не редактировать вручную) -->
+![checks](https://img.shields.io/badge/checks-163-blue) ![results](https://img.shields.io/badge/results-265-blue) ![passed](https://img.shields.io/badge/passed-174-brightgreen) ![failed](https://img.shields.io/badge/failed-65-red) ![blocked](https://img.shields.io/badge/blocked-4-orange) ![bugs](https://img.shields.io/badge/bugs-43-orange) ![critical](https://img.shields.io/badge/critical-16-red) ![release](https://img.shields.io/badge/release-No--Go-red)
+
+```mermaid
+pie showData title Спринт 3: дефекты по серьёзности
+    "Critical" : 16
+    "Major" : 20
+    "Minor" : 7
+```
+<!-- STATS3:END -->
+
+🔗 [Реестр багов](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/bugs.html) · [Матрица браузеров](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/matrix.html) · [Серые зоны](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/gray-zones.html) · [Тренажёр «Найди баг»](https://ikqavscode-afk.github.io/qa-test-documentation/sprint3/trainer.html)
+
 ## Что внутри
 
 | Папка | Назначение |
 |---|---|
-| [sprint-2-YaM](sprint-2-YaM/) | тест-дизайн, тест-кейсы, баг-репорты со скриншотами |
+| [sprint-2-YaM](sprint-2-YaM/) | спринт 2: тест-дизайн, тест-кейсы, баг-репорты |
+| [spritn-3-CarSh](spritn-3-CarSh/) | спринт 3: тест-анализ, серые зоны, чек-листы, баги, отчёты, ретест |
 | [data](data/) | исходные данные (JSON): результаты тестов и баги — из них строится статистика и Issues |
 | [templates](templates/) | шаблоны тест-кейса, баг-репорта и чек-листа |
 | [docs](docs/) | методика (конспекты) и сайт GitHub Pages с интерактивным чек-листом |
@@ -51,8 +75,8 @@ pie showData title Дефекты по серьёзности
 
 ## Баги как Issues
 
-18 дефектов оформляются как GitHub Issues с метками `severity:`, `priority:`, `area:`.
-Создаются одной кнопкой: **Actions → Setup issues → Run workflow**. Повторный запуск дубликатов не создаёт.
+Дефекты (18 из спринта 2 и 43 из спринта 3) оформляются как GitHub Issues с метками `severity:`, `priority:`, `area:`.
+Создаются одной кнопкой: **Actions → Setup issues → Run workflow** (можно выбрать спринт или оба). Повторный запуск дубликатов не создаёт.
 
 ## Дорожная карта
 
@@ -60,7 +84,8 @@ pie showData title Дефекты по серьёзности
 - [x] Функциональное тестирование валидации полей и расчёта (63 кейса)
 - [x] Оформление дефектов (18 баг-репортов)
 - [x] Шаблоны, Issues, автостатистика, интерактивный чек-лист
-- [ ] Кроссбраузерная проверка (Chrome, Firefox, Safari, Edge)
+- [x] Кроссбраузерная проверка верстки (Firefox и Яндекс Браузер, спринт 3)
+- [ ] Кроссбраузерная проверка остальных браузеров (Chrome, Safari, Edge)
 - [ ] Проверка на мобильных устройствах
 - [ ] Анализ запросов и логов в DevTools (вкладка Network, консоль)
 - [ ] API-тестирование в Postman

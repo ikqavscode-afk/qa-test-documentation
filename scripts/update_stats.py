@@ -46,8 +46,26 @@ pie showData title Дефекты по серьёзности
 ```
 <!-- STATS:END -->"""
 
+# ---- спринт 3
+b3 = json.loads((ROOT / "data/sprint3-bugs.json").read_text())
+c3 = json.loads((ROOT / "data/sprint3-checks.json").read_text())
+res3 = Counter(c[br] for c in c3 for br in ("firefox_win", "yandex_mac") if c[br])
+sv3 = Counter(b["severity"] for b in b3)
+tot3 = sum(res3.values())
+block3 = f"""<!-- STATS3:START (генерируется scripts/update_stats.py — не редактировать вручную) -->
+{badge('checks', len(c3), 'blue')} {badge('results', tot3, 'blue')} {badge('passed', res3['Passed'], 'brightgreen')} {badge('failed', res3['Failed'], 'red')} {badge('blocked', res3['Blocked'], 'orange')} {badge('bugs', len(b3), 'orange')} {badge('critical', sv3['critical'], 'red')} {badge('release', 'No--Go', 'red')}
+
+```mermaid
+pie showData title Спринт 3: дефекты по серьёзности
+    "Critical" : {sv3['critical']}
+    "Major" : {sv3['major']}
+    "Minor" : {sv3['minor']}
+```
+<!-- STATS3:END -->"""
+
 p = ROOT / "README.md"
 txt = p.read_text()
 new = re.sub(r"<!-- STATS:START.*?<!-- STATS:END -->", lambda m: block, txt, flags=re.S)
+new = re.sub(r"<!-- STATS3:START.*?<!-- STATS3:END -->", lambda m: block3, new, flags=re.S)
 p.write_text(new)
 print("README обновлён:", dict(st), dict(sv))
